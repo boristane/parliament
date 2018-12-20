@@ -1,0 +1,38 @@
+[
+  {
+    "PartyShortName": "Lab",
+    "color": "#E30000"
+  },
+  {
+    "PartyShortName": "Con",
+    "color": "#3275DE"
+  },
+  {
+    "PartyShortName": "PC",
+    "color": "#77D53C"
+  },
+  {
+    "PartyShortName": "UKIP",
+    "color": "#760076"
+  },
+  {
+    "PartyShortName": "SNP",
+    "color": "#F6FF81"
+  },
+  {
+    "PartyShortName": "DUP",
+    "color": "#D86147"
+  },
+  {
+    "PartyShortName": "LD",
+    "color": "#FBA900"
+  },
+  {
+    "PartyShortName": "Green",
+    "color": "#45936B"
+  },
+  {
+    "PartyShortName": "Spk",
+    "color": "#202020"
+  }
+]
