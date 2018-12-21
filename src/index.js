@@ -2,9 +2,9 @@ import * as d3 from 'd3';
 import utils from './utils';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
-const width = 1200;
-const height = 1200;
-let map;
+const padding = 40;
+const width = window.innerWidth - padding;
+const height = window.innerHeight - padding;
 const gold = '#FFDF00';
 const white = '#fff';
 const grey = '#C0C0C0';
@@ -32,7 +32,6 @@ select.addEventListener('change', (e) => {
     d3.selectAll('path')
       .attr('fill', (d) => {
         const female = d.properties.results.find(row => row.Elected === 'TRUE').CandidateGender === 'Female';
-        console.log(female);
         return female ? purple : blue;
       });
   }
@@ -75,8 +74,10 @@ fetch(geoJsonURL)
         d3.json('./data/colors.json')
           .then((res) => {
             partyColors = res;
+            const lat = 51.509865;
+            const long = -0.118092;
             // Join the FeatureCollection's features array to path elements
-            map = svg.selectAll('path')
+            const map = svg.selectAll('path')
               .data(mapData.features);
 
             // Create path elements and update the d attribute using the geo generator
@@ -91,6 +92,24 @@ fetch(geoJsonURL)
                 const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
                 return utils.getColor(winnigPartyCode, partyColors);
               });
+
+            // add circles to svg
+            svg.selectAll('circle')
+              .data([[long, lat]]).enter()
+              .append('circle')
+              .attr('cx', d => projection(d)[0])
+              .attr('cy', d => projection(d)[1])
+              .attr('r', '4px')
+              .attr('fill', 'black')
+              .attr('stroke', 'white')
+              .attr('stroke-width', 2);
+            svg.selectAll('text')
+              .data([[long, lat]]).enter()
+              .append('text')
+              .attr('x', d => projection(d)[0] + 8)
+              .attr('y', d => projection(d)[1] + 4)
+              .text('London')
+              .attr('class', 'city-name');
           });
       });
   });
