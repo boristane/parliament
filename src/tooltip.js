@@ -10,7 +10,6 @@ function displayCandidate(candidate) {
   document.querySelector('.tooltip .share').textContent = `Votes: ${(candidate.electionShare * 100).toFixed(1)}%`;
 }
 
-
 export default {
   div,
   displayCandidate,

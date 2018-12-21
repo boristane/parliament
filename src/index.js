@@ -35,6 +35,28 @@ select.addEventListener('change', (e) => {
         const female = d.properties.results.find(row => row.Elected === 'TRUE').CandidateGender === 'Female';
         return female ? purple : blue;
       });
+  } else if (mapType === 'turnout') {
+    const darkBlue = '#003366';
+    const lightBlue = '#ADD8E6';
+    const color = d3.scaleLinear()
+      .domain([50, 80])
+      .range([lightBlue, darkBlue]);
+    d3.selectAll('path')
+      .attr('fill', (d) => {
+        const turnout = Number.parseFloat(d.properties.results[0].TurnoutPercentageValue) * 100;
+        return color(turnout);
+      });
+  } else if (mapType === 'majority') {
+    const darkRed = '#8b0000';
+    const lightRed = '#f08080';
+    const color = d3.scaleLinear()
+      .domain([20, 60])
+      .range([lightRed, darkRed]);
+    d3.selectAll('path')
+      .attr('fill', (d) => {
+        const majority = Number.parseFloat(d.properties.results.find(row => row.Elected === 'TRUE').MajorityPercentageValue) * 100;
+        return color(majority);
+      });
   }
 });
 
