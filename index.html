@@ -6,7 +6,7 @@
   <title>Data Viz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
-</head>
+  </head>
 <body>
   
   <form>
@@ -18,7 +18,17 @@
   </form>
 
   <div id="content">
-      
+      <div class="tooltip">
+        <h1 class="constituency"></h1>
+        <div class="party-container">
+          <img src="" alt="party" class="party-logo">
+          <div>
+            <p class="name"></p>
+            <p class="gender"></p>
+            <p class="share"></p>
+          </div>
+        </div>
+      </div>
   </div>
 </body>
 <script src="dist/bundle.js"></script>

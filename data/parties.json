@@ -1,0 +1,40 @@
+[
+  {
+    "PartyShortName": "Lab",
+    "color": "#E30000",
+    "logo": "https://botw-pd.s3.amazonaws.com/styles/logo-thumbnail/s3/032014/labour.png?itok=bhMSKafF"
+  },
+  {
+    "PartyShortName": "Con",
+    "color": "#3275DE",
+    "logo": "https://www.secca.org.uk/sites/www.secca.org.uk/files/2017-04/09NoY2fM_400x400.jpeg"
+  },
+  {
+    "PartyShortName": "PC",
+    "color": "#77D53C"
+  },
+  {
+    "PartyShortName": "UKIP",
+    "color": "#760076"
+  },
+  {
+    "PartyShortName": "SNP",
+    "color": "#F6FF81"
+  },
+  {
+    "PartyShortName": "DUP",
+    "color": "#D86147"
+  },
+  {
+    "PartyShortName": "LD",
+    "color": "#FBA900"
+  },
+  {
+    "PartyShortName": "Green",
+    "color": "#45936B"
+  },
+  {
+    "PartyShortName": "Spk",
+    "color": "#202020"
+  }
+]

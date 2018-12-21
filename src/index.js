@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import utils from './utils';
+import tooltip from './tooltip';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const padding = 40;
@@ -10,7 +11,7 @@ const white = '#fff';
 const grey = '#C0C0C0';
 const purple = '#551A8B';
 const blue = '#ADD8E6';
-let partyColors;
+let partyDetails;
 
 const select = document.getElementById('map-type');
 
@@ -20,7 +21,7 @@ select.addEventListener('change', (e) => {
     d3.selectAll('path')
       .attr('fill', (d) => {
         const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-        return utils.getColor(winnigPartyCode, partyColors);
+        return utils.getColor(winnigPartyCode, partyDetails);
       });
   } else if (mapType === 'changed') {
     d3.selectAll('path')
@@ -37,16 +38,30 @@ select.addEventListener('change', (e) => {
   }
 });
 
-function handleMouseEnter(d) {
-  d3.select(this)
-    .style('cursor', 'pointer')
-    .attr('stroke-width', 2);
+function handleMouseOver(d) {
+  tooltip.div.transition()
+    .duration(200)
+    .style('opacity', 0.9);
+  const winningRow = d.properties.results.find(row => row.Elected === 'TRUE');
+  const winningCandidate = {
+    constituency: winningRow.ConstituencyName,
+    partyName: winningRow.CandidateParty,
+    partyShortName: winningRow.PartyShortName,
+    partyLogo: partyDetails.find(party => party.PartyShortName === winningRow.PartyShortName).logo,
+    name: winningRow.CandidateDisplayName,
+    gender: winningRow.CandidateGender,
+    electionShare: winningRow.ShareValue,
+  };
+  tooltip.displayCandidate(winningCandidate);
+  tooltip.div
+    .style('left', `${d3.event.pageX}px`)
+    .style('top', `${d3.event.pageY - 28}px`);
 }
 
-function handleMouseLeave(d) {
-  d3.select(this)
-    .style('cursor', 'default')
-    .attr('stroke-width', 0);
+function handleMouseOut() {
+  tooltip.div.transition()
+    .duration(500)
+    .style('opacity', 0);
 }
 
 const svg = d3.select('#content')
@@ -71,9 +86,9 @@ fetch(geoJsonURL)
           const constituencyResults = resultsData.filter(data => data.ONSconstID === id);
           constituency.properties.results = constituencyResults;
         });
-        d3.json('./data/colors.json')
+        d3.json('./data/parties.json')
           .then((res) => {
-            partyColors = res;
+            partyDetails = res;
             const lat = 51.509865;
             const long = -0.118092;
             // Join the FeatureCollection's features array to path elements
@@ -86,11 +101,12 @@ fetch(geoJsonURL)
               .attr('d', geoGenerator)
               .attr('stroke', white)
               .attr('stroke-width', 0)
-              .on('mouseenter', handleMouseEnter)
-              .on('mouseleave', handleMouseLeave)
+              .attr('class', 'constituency')
+              .on('mouseover', handleMouseOver)
+              .on('mouseout', handleMouseOut)
               .attr('fill', (d) => {
                 const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-                return utils.getColor(winnigPartyCode, partyColors);
+                return utils.getColor(winnigPartyCode, partyDetails);
               });
 
             // add circles to svg
