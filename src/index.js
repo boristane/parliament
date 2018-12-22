@@ -5,9 +5,9 @@ import cities from './cities';
 import mapUtils from './map.utils';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
-const padding = 40;
-const width = window.innerWidth - padding;
-const height = window.innerHeight - padding;
+const padding = 5;
+const width = document.getElementById('content').clientWidth - padding;
+const height = document.getElementById('content').clientHeight - padding;
 const white = '#fff';
 let partyDetails;
 let mapData;
@@ -108,6 +108,23 @@ fetch(geoJsonURL)
                 const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
                 return utils.getColor(winnigPartyCode, partyDetails);
               });
+
+            // Add zoom and pan events
+            function zoomed() {
+              console.log('zooming');
+              d3.selectAll('.map-svg').attr('transform', d3.event.transform);
+            }
+
+            function wheelDelta() {
+              return -d3.event.deltaY * (d3.event.deltaMode ? 120 : 1) / 100;
+            }
+            const zoom = d3.zoom()
+              .scaleExtent([1, 50])
+              .extent([[0, 0], [width, height]])
+              .translateExtent([[0, 0], [width, height]])
+              .wheelDelta(wheelDelta)
+              .on('zoom', zoomed);
+            d3.selectAll('.map-svg').call(zoom);
 
             // Add cities to svg
             const citiesGroup = svg.append('g')
