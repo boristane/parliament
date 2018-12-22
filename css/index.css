@@ -5,6 +5,16 @@
   z-index: -1;;
 }
 
+.hidden {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
+.cities {
+  opacity: 0.9;
+  transition: all 0.2s ease-in-out;
+}
+
 .city-name {
   font-size:  10px;
   paint-order: stroke;
@@ -15,7 +25,11 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.constituency:hover {
+.constituency-map {
+  transition: all 0.2s ease-in-out;
+}
+
+.constituency-map:hover {
   stroke-width: 2px;
   cursor: pointer;
 }
@@ -33,6 +47,7 @@ div.tooltip {
   pointer-events: none;
   opacity: 0;
   padding: 10px;
+  transition: all 0.2s ease-in-out;
 }
 
 .constituency {

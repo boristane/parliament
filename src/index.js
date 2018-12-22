@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import utils from './utils';
 import tooltip from './tooltip';
+import cities from './cities';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const padding = 40;
@@ -14,6 +15,15 @@ const blue = '#ADD8E6';
 let partyDetails;
 
 const select = document.getElementById('map-type');
+const citiesCheckbox = document.getElementById('cities-box');
+
+citiesCheckbox.addEventListener('click', (e) => {
+  const checkBox = e.target;
+  const citiesGroup = document.querySelector('.cities');
+  if (checkBox.checked) citiesGroup.classList.remove('hidden');
+  if (!checkBox.checked) citiesGroup.classList.add('hidden');
+});
+
 
 select.addEventListener('change', (e) => {
   const mapType = e.target.options[e.target.selectedIndex].value;
@@ -82,7 +92,7 @@ function handleMouseOver(d) {
 
 function handleMouseOut() {
   tooltip.div.transition()
-    .duration(500)
+    .duration(200)
     .style('opacity', 0);
 }
 
@@ -111,8 +121,6 @@ fetch(geoJsonURL)
         d3.json('./data/parties.json')
           .then((res) => {
             partyDetails = res;
-            const lat = 51.509865;
-            const long = -0.118092;
             // Join the FeatureCollection's features array to path elements
             const map = svg.selectAll('path')
               .data(mapData.features);
@@ -123,7 +131,7 @@ fetch(geoJsonURL)
               .attr('d', geoGenerator)
               .attr('stroke', white)
               .attr('stroke-width', 0)
-              .attr('class', 'constituency')
+              .attr('class', 'constituency-map')
               .on('mouseover', handleMouseOver)
               .on('mouseout', handleMouseOut)
               .attr('fill', (d) => {
@@ -131,22 +139,24 @@ fetch(geoJsonURL)
                 return utils.getColor(winnigPartyCode, partyDetails);
               });
 
-            // add circles to svg
-            svg.selectAll('circle')
-              .data([[long, lat]]).enter()
+            // Add cities to svg
+            const citiesGroup = svg.append('g')
+              .attr('class', 'cities hidden');
+            citiesGroup.selectAll('circle')
+              .data(cities).enter()
               .append('circle')
-              .attr('cx', d => projection(d)[0])
-              .attr('cy', d => projection(d)[1])
+              .attr('cx', d => projection([d.long, d.lat])[0])
+              .attr('cy', d => projection([d.long, d.lat])[1])
               .attr('r', '4px')
               .attr('fill', 'black')
               .attr('stroke', 'white')
               .attr('stroke-width', 2);
-            svg.selectAll('text')
-              .data([[long, lat]]).enter()
+            citiesGroup.selectAll('text')
+              .data(cities).enter()
               .append('text')
-              .attr('x', d => projection(d)[0] + 8)
-              .attr('y', d => projection(d)[1] + 4)
-              .text('London')
+              .attr('x', d => projection([d.long, d.lat])[0] + 8)
+              .attr('y', d => projection([d.long, d.lat])[1] + 4)
+              .text(d => d.name)
               .attr('class', 'city-name');
           });
       });
