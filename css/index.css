@@ -1,8 +1,12 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 #content{
   position: absolute;
   top: 20;
   left: 20;
-  z-index: -1;;
+  z-index: -1;
 }
 
 .hidden {
@@ -22,15 +26,15 @@
   stroke-width: 3px;
   stroke-linecap: butt;
   stroke-linejoin: miter;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .constituency-map {
-  transition: all 0.2s ease-in-out;
+  transition: fill 0.2s ease-in-out;
 }
 
 .constituency-map:hover {
-  stroke-width: 2px;
+  stroke-width: 0.5px;
+  stroke: white;
   cursor: pointer;
 }
 
@@ -39,7 +43,6 @@ div.tooltip {
   width: 200px;					
   min-height: 80px;					
   padding: 2px;				
-  font: 8px Arial, Helvetica, sans-serif;
   color: rgb(75, 75, 75);	
   background: white;	
   border: 1px solid lightgray;
@@ -50,7 +53,7 @@ div.tooltip {
   transition: all 0.2s ease-in-out;
 }
 
-.constituency {
+.tooltip .constituency {
   font-size: 12px;
   font-weight: bold;
   border-bottom: 1px solid black;
@@ -58,27 +61,30 @@ div.tooltip {
   color: black;
 }
 
-.party-container{
+.tooltip .party-container{
   display: grid;
   grid-template-columns: 30% 70%;
 }
 
-.name {
+.tooltip .name {
   font-size: 18px;
-  margin: 0;
 }
 
-.gender {
+.tooltip .position {
+  font-size: 10px;
+}
+
+.tooltip .gender {
   font-size: 12px;
   margin: 0;
 }
 
-.share {
+.tooltip .share {
   font-size: 10px;
   margin: 0;
 }
 
-.party-logo{
+.tooltip .party-logo{
   width: 50px;
   height: 50px;
   border: 1px solid rgb(196, 196, 196);

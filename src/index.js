@@ -2,17 +2,15 @@ import * as d3 from 'd3';
 import utils from './utils';
 import tooltip from './tooltip';
 import cities from './cities';
+import mapUtils from './map.utils';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const padding = 40;
 const width = window.innerWidth - padding;
 const height = window.innerHeight - padding;
-const gold = '#FFDF00';
 const white = '#fff';
-const grey = '#C0C0C0';
-const purple = '#551A8B';
-const blue = '#ADD8E6';
 let partyDetails;
+let mapData;
 
 const select = document.getElementById('map-type');
 const citiesCheckbox = document.getElementById('cities-box');
@@ -28,45 +26,15 @@ citiesCheckbox.addEventListener('click', (e) => {
 select.addEventListener('change', (e) => {
   const mapType = e.target.options[e.target.selectedIndex].value;
   if (mapType === 'results') {
-    d3.selectAll('path')
-      .attr('fill', (d) => {
-        const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-        return utils.getColor(winnigPartyCode, partyDetails);
-      });
+    mapUtils.displayResults(partyDetails);
   } else if (mapType === 'changed') {
-    d3.selectAll('path')
-      .attr('fill', (d) => {
-        const hold = d.properties.results[0].ResultHoldGain.split(' ').includes('hold');
-        return hold ? grey : gold;
-      });
+    mapUtils.displayChangedConstituencies();
   } else if (mapType === 'gender') {
-    d3.selectAll('path')
-      .attr('fill', (d) => {
-        const female = d.properties.results.find(row => row.Elected === 'TRUE').CandidateGender === 'Female';
-        return female ? purple : blue;
-      });
+    mapUtils.displayGender();
   } else if (mapType === 'turnout') {
-    const darkBlue = '#003366';
-    const lightBlue = '#ADD8E6';
-    const color = d3.scaleLinear()
-      .domain([50, 80])
-      .range([lightBlue, darkBlue]);
-    d3.selectAll('path')
-      .attr('fill', (d) => {
-        const turnout = Number.parseFloat(d.properties.results[0].TurnoutPercentageValue) * 100;
-        return color(turnout);
-      });
+    mapUtils.displayTurnout(mapData);
   } else if (mapType === 'majority') {
-    const darkRed = '#8b0000';
-    const lightRed = '#f08080';
-    const color = d3.scaleLinear()
-      .domain([20, 60])
-      .range([lightRed, darkRed]);
-    d3.selectAll('path')
-      .attr('fill', (d) => {
-        const majority = Number.parseFloat(d.properties.results.find(row => row.Elected === 'TRUE').MajorityPercentageValue) * 100;
-        return color(majority);
-      });
+    mapUtils.displayMajority(mapData);
   }
 });
 
@@ -83,6 +51,7 @@ function handleMouseOver(d) {
     name: winningRow.CandidateDisplayName,
     gender: winningRow.CandidateGender,
     electionShare: winningRow.ShareValue,
+    position: 'MP',
   };
   tooltip.displayCandidate(winningCandidate);
   tooltip.div
@@ -101,11 +70,12 @@ const svg = d3.select('#content')
   .attr('width', width)
   .attr('height', height)
   .append('g')
-  .classed('map', true);
+  .attr('class', 'map-svg');
 
 fetch(geoJsonURL)
   .then(response => response.json())
-  .then((mapData) => {
+  .then((data) => {
+    mapData = data;
     const projection = d3.geoMercator();
     projection.fitSize([width, height], mapData);
     const geoGenerator = d3.geoPath()
@@ -122,7 +92,7 @@ fetch(geoJsonURL)
           .then((res) => {
             partyDetails = res;
             // Join the FeatureCollection's features array to path elements
-            const map = svg.selectAll('path')
+            const map = svg.selectAll('.map-svg path')
               .data(mapData.features);
 
             // Create path elements and update the d attribute using the geo generator
