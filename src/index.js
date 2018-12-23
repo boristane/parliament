@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import simplify from 'simplify-geojson';
 import utils from './utils';
 import tooltip from './tooltip';
 import cities from './cities';
@@ -75,7 +76,7 @@ const svg = d3.select('#content')
 fetch(geoJsonURL)
   .then(response => response.json())
   .then((data) => {
-    mapData = data;
+    mapData = simplify(data, 0.001);
     const projection = d3.geoMercator();
     projection.fitSize([width, height], mapData);
     const geoGenerator = d3.geoPath()
