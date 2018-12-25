@@ -155,10 +155,34 @@ function displayMajority(mapData) {
   linearLegend([minValue, maxValue], [lightRed, darkRed]);
 }
 
+function displayPartyShare(mapData, partyDetails, partyShortName) {
+  const midColor = utils.getColor(partyShortName, partyDetails);
+  const darkColor = utils.colorLuminance(midColor, -0.5);
+  const lightColor = utils.colorLuminance(midColor, 0.5);
+  const shareData = mapData.features.map((constituency) => {
+    const { results } = constituency.properties;
+    const participated = results.find(row => row.PartyShortName === partyShortName);
+    return participated ? Number.parseFloat(participated.ShareValue) : undefined;
+  });
+  const minValue = utils.floorToNext5Percent(d3.min(shareData));
+  const maxValue = utils.ceilToNext5Percent(d3.max(shareData));
+  const color = d3.scaleLinear()
+    .domain([minValue, maxValue])
+    .range([lightColor, darkColor]);
+  d3.selectAll('.map-svg path')
+    .attr('fill', (d) => {
+      const defaultColor = '#d3d3d3';
+      const participated = d.properties.results.find(row => row.PartyShortName === partyShortName);
+      return participated ? color(Number.parseFloat(participated.ShareValue)) : defaultColor;
+    });
+  linearLegend([minValue, maxValue], [lightColor, darkColor]);
+}
+
 export default {
   displayResults,
   displayChangedConstituencies,
   displayGender,
   displayTurnout,
   displayMajority,
+  displayPartyShare,
 };

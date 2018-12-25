@@ -13,7 +13,8 @@ const white = '#fff';
 let partyDetails;
 let mapData;
 
-const select = document.getElementById('map-type');
+const selectMapType = document.getElementById('map-type');
+const selectParty = document.getElementById('select-party');
 const citiesCheckbox = document.getElementById('cities-box');
 
 citiesCheckbox.addEventListener('click', (e) => {
@@ -23,8 +24,7 @@ citiesCheckbox.addEventListener('click', (e) => {
   if (!checkBox.checked) citiesGroup.classList.add('hidden');
 });
 
-
-select.addEventListener('change', (e) => {
+selectMapType.addEventListener('change', (e) => {
   const mapType = e.target.options[e.target.selectedIndex].value;
   if (mapType === 'results') {
     mapUtils.displayResults(partyDetails);
@@ -36,7 +36,16 @@ select.addEventListener('change', (e) => {
     mapUtils.displayTurnout(mapData);
   } else if (mapType === 'majority') {
     mapUtils.displayMajority(mapData);
+  } else if (mapType === 'share') {
+    const userSelectedParty = selectParty[selectParty.selectedIndex].value;
+    mapUtils.displayPartyShare(mapData, partyDetails, userSelectedParty);
   }
+});
+
+selectParty.addEventListener('change', (e) => {
+  const party = e.target.options[e.target.selectedIndex].value;
+  const mapType = selectMapType.options[selectMapType.selectedIndex].value;
+  if (mapType === 'share') mapUtils.displayPartyShare(mapData, partyDetails, party);
 });
 
 function handleMouseOver(d) {
@@ -112,8 +121,7 @@ fetch(geoJsonURL)
 
             // Add zoom and pan events
             function zoomed() {
-              console.log('zooming');
-              d3.selectAll('.map-svg').attr('transform', d3.event.transform);
+              d3.select('.map-svg').attr('transform', d3.event.transform);
             }
 
             function wheelDelta() {
@@ -125,7 +133,7 @@ fetch(geoJsonURL)
               .translateExtent([[0, 0], [width, height]])
               .wheelDelta(wheelDelta)
               .on('zoom', zoomed);
-            d3.selectAll('.map-svg').call(zoom);
+            d3.select('svg').call(zoom);
 
             // Add cities to svg
             const citiesGroup = svg.append('g')

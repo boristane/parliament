@@ -8,17 +8,29 @@
   <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
   </head>
 <body>
-  
-  <form class="user-inpput">
-    <select id="map-type">
-      <option value="results">Results</option>
-      <option value="changed">Changed</option>
-      <option value="gender">Gender</option>
-      <option value="turnout">Turnout</option>
-      <option value="majority">Majority</option>
-    </select>
-    <input type="checkbox" id="cities-box">Display Cities<br>
-  </form>
+  <div class="user-input">
+    <form class="user-inpput">
+      <select id="map-type">
+        <option value="results">Results</option>
+        <option value="changed">Changed</option>
+        <option value="gender">Gender</option>
+        <option value="turnout">Turnout</option>
+        <option value="majority">Majority</option>
+        <option value="share">Party Share</option>
+      </select>
+      <input type="checkbox" id="cities-box">Display Cities<br>
+      <div>
+        <select id="select-party">
+          <option value="Con">Con</option>
+          <option value="Lab">Lab</option>
+          <option value="PC">PC</option>
+          <option value="UKIP">UKIP</option>
+          <option value="SNP">SNP</option>
+          <option value="DUP">DUP</option>
+        </select>
+      </div>
+    </form>
+  </div>
 
   <div id="content">
       <div class="tooltip">
