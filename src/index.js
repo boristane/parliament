@@ -24,6 +24,7 @@ const svg = d3.select('#content')
   .append('svg')
   .attr('width', width)
   .attr('height', height)
+  .attr('class', 'main-svg')
   .append('g')
   .attr('class', 'map-svg');
 
@@ -73,10 +74,24 @@ function handleMouseOver(d) {
     electionShare: winningRow.ShareValue,
     position: 'MP',
   };
-  tooltip.displayCandidate(winningCandidate);
   tooltip.div
     .style('left', `${d3.event.pageX}px`)
     .style('top', `${d3.event.pageY - 28}px`);
+
+  setTimeout(() => {
+    tooltip.displayConstituency(winningCandidate);
+    tooltip.displayCandidate(winningCandidate);
+    const mapType = selectMapType.options[selectMapType.selectedIndex].value;
+    document.querySelectorAll('.tooltip .section').forEach(elt => elt.classList.add('none'));
+    if (mapType === 'changed') {
+      tooltip.displayChanged(partyDetails, winningRow.ResultHoldGain);
+    } else if (mapType === 'gender') {
+      const constituencyRows = d.properties.results
+        .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
+      const genders = constituencyRows.map(row => row.CandidateGender);
+      tooltip.displayGender(genders);
+    }
+  }, 200);
 }
 
 function handleMouseOut() {
@@ -89,7 +104,7 @@ function reset() {
   active.classed('active', false);
   active = d3.select(null);
 
-  d3.select('svg').transition()
+  d3.select('.main-svg').transition()
     .duration(750)
     .call(zoom.transform, d3.zoomIdentity);
 }
@@ -108,7 +123,7 @@ function clicked(d) {
   const scale = Math.max(1, Math.min(maxZoom, 0.9 / Math.max(dx / width, dy / height)));
   const translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-  return d3.select('svg').transition()
+  return d3.select('.main-svg').transition()
     .duration(750)
     .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
@@ -126,7 +141,7 @@ fetch(geoJsonURL)
       .then((resultsData) => {
         mapData.features.forEach((constituency) => {
           const id = constituency.properties.PCON13CD;
-          const constituencyResults = resultsData.filter(data => data.ONSconstID === id);
+          const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
           constituency.properties.results = constituencyResults;
         });
         d3.json('./data/parties.json')
@@ -160,7 +175,7 @@ fetch(geoJsonURL)
               .extent([[0, 0], [width, height]])
               .translateExtent([[0, 0], [width, height]])
               .on('zoom', zoomed);
-            d3.select('svg').call(zoom);
+            d3.select('.main-svg').call(zoom);
 
             // Add cities to svg
             const citiesGroup = svg.append('g')
