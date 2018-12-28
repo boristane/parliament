@@ -157,8 +157,8 @@ function displayMajority(mapData) {
 
 function displayPartyShare(mapData, partyDetails, partyShortName) {
   const midColor = utils.getColor(partyShortName, partyDetails);
-  const darkColor = utils.colorLuminance(midColor, -0.5);
-  const lightColor = utils.colorLuminance(midColor, 0.5);
+  const darkColor = utils.colorLuminance(midColor, -0.9);
+  const lightColor = utils.colorLuminance(midColor, 0.9);
   const shareData = mapData.features.map((constituency) => {
     const { results } = constituency.properties;
     const participated = results.find(row => row.PartyShortName === partyShortName);
@@ -167,7 +167,7 @@ function displayPartyShare(mapData, partyDetails, partyShortName) {
   const minValue = utils.floorToNext5Percent(d3.min(shareData));
   const maxValue = utils.ceilToNext5Percent(d3.max(shareData));
   const color = d3.scaleLinear()
-    .domain([minValue, maxValue])
+    .domain([0, 1])
     .range([lightColor, darkColor]);
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
@@ -175,7 +175,7 @@ function displayPartyShare(mapData, partyDetails, partyShortName) {
       const participated = d.properties.results.find(row => row.PartyShortName === partyShortName);
       return participated ? color(Number.parseFloat(participated.ShareValue)) : defaultColor;
     });
-  linearLegend([minValue, maxValue], [lightColor, darkColor]);
+  linearLegend([minValue, maxValue], [color(minValue), color(maxValue)]);
 }
 
 export default {

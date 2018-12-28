@@ -41,12 +41,18 @@ body {
 }
 
 .constituency-map:hover {
-  stroke-width: 0.5px;
+  stroke-width: 0.3px;
   stroke: white;
   cursor: pointer;
 }
 
+.constituency-map.active {
+  stroke: black;
+  stroke-width: 0.1px;
+}
+
 div.tooltip {	
+  display: none;
   position: absolute;						
   width: 200px;					
   min-height: 80px;					

@@ -12,10 +12,20 @@ const height = document.getElementById('content').clientHeight - padding;
 const white = '#fff';
 let partyDetails;
 let mapData;
+let geoGenerator;
+let zoom;
+let active = d3.select(null);
 
 const selectMapType = document.getElementById('map-type');
 const selectParty = document.getElementById('select-party');
 const citiesCheckbox = document.getElementById('cities-box');
+
+const svg = d3.select('#content')
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height)
+  .append('g')
+  .attr('class', 'map-svg');
 
 citiesCheckbox.addEventListener('click', (e) => {
   const checkBox = e.target;
@@ -75,12 +85,33 @@ function handleMouseOut() {
     .style('opacity', 0);
 }
 
-const svg = d3.select('#content')
-  .append('svg')
-  .attr('width', width)
-  .attr('height', height)
-  .append('g')
-  .attr('class', 'map-svg');
+function reset() {
+  active.classed('active', false);
+  active = d3.select(null);
+
+  d3.select('svg').transition()
+    .duration(750)
+    .call(zoom.transform, d3.zoomIdentity);
+}
+
+function clicked(d) {
+  if (active.node() === this) return reset();
+  active.classed('active', false);
+  active = d3.select(this).classed('active', true);
+
+  const maxZoom = 20;
+  const bounds = geoGenerator.bounds(d);
+  const dx = bounds[1][0] - bounds[0][0];
+  const dy = bounds[1][1] - bounds[0][1];
+  const x = (bounds[0][0] + bounds[1][0]) / 2;
+  const y = (bounds[0][1] + bounds[1][1]) / 2;
+  const scale = Math.max(1, Math.min(maxZoom, 0.9 / Math.max(dx / width, dy / height)));
+  const translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+  return d3.select('svg').transition()
+    .duration(750)
+    .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
+}
 
 fetch(geoJsonURL)
   .then(response => response.json())
@@ -88,7 +119,7 @@ fetch(geoJsonURL)
     mapData = simplify(data, 0.001);
     const projection = d3.geoMercator();
     projection.fitSize([width, height], mapData);
-    const geoGenerator = d3.geoPath()
+    geoGenerator = d3.geoPath()
       .projection(projection);
 
     d3.csv('./data/Current-Parliament-Election-Results.csv')
@@ -114,6 +145,7 @@ fetch(geoJsonURL)
               .attr('class', 'constituency-map')
               .on('mouseover', handleMouseOver)
               .on('mouseout', handleMouseOut)
+              .on('click', clicked)
               .attr('fill', (d) => {
                 const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
                 return utils.getColor(winnigPartyCode, partyDetails);
@@ -123,15 +155,10 @@ fetch(geoJsonURL)
             function zoomed() {
               d3.select('.map-svg').attr('transform', d3.event.transform);
             }
-
-            function wheelDelta() {
-              return -d3.event.deltaY * (d3.event.deltaMode ? 120 : 1) / 100;
-            }
-            const zoom = d3.zoom()
+            zoom = d3.zoom()
               .scaleExtent([1, 50])
               .extent([[0, 0], [width, height]])
               .translateExtent([[0, 0], [width, height]])
-              .wheelDelta(wheelDelta)
               .on('zoom', zoomed);
             d3.select('svg').call(zoom);
 
