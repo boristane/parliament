@@ -90,6 +90,10 @@ function handleMouseOver(d) {
         .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
       const genders = constituencyRows.map(row => row.CandidateGender);
       tooltip.displayGender(genders);
+    } else if (mapType === 'turnout') {
+      const turnout = winningRow.TurnoutPercentageValue;
+      const electorate = winningRow.Electorate;
+      tooltip.displayTurnout(turnout, electorate);
     }
   }, 200);
 }

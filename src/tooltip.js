@@ -96,10 +96,53 @@ function displayGender(genders) {
     .text(d => d.gender);
 }
 
+function displayTurnout(turnout, electorate) {
+  document.querySelector('.tooltip .turnout-div').classList.remove('none');
+  document.querySelector('.electorate').textContent = electorate;
+  document.querySelector('.turnout').textContent = `${(turnout * 100).toFixed(0)}%`;
+  const data = [turnout, 1 - turnout];
+  const darkBlue = '#003366';
+  const lightBlue = '#ADD8E6';
+  const linearColorScale = d3.scaleLinear()
+    .domain([0, 1])
+    .range([lightBlue, darkBlue]);
+  const width = 180;
+  const height = 100;
+  d3.select('.turnout-chart').remove();
+  const chart = d3.select('.tooltip .turnout-div .turnout-chart-container')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('class', 'turnout-chart')
+    .append('g')
+    .attr('transform', `translate(${width / 2}, ${height / 2})`);
+  const radius = Math.min(width, height) / 2;
+  const pie = d3.pie()
+    .sort(null)
+    .value(d => d);
+
+  const path = d3.arc()
+    .outerRadius(radius - 5)
+    .innerRadius(0);
+
+  const arc = chart.selectAll('.arc')
+    .data(pie(data))
+    .enter().append('g')
+    .attr('class', 'arc');
+
+  arc.append('path')
+    .attr('d', path)
+    .attr('fill', (d, i) => {
+      if (i === 0) return linearColorScale(d.value);
+      return 'lightgray';
+    });
+}
+
 export default {
   div,
   displayConstituency,
   displayCandidate,
   displayChanged,
   displayGender,
+  displayTurnout,
 };
