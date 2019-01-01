@@ -6,7 +6,7 @@ function ordinalLegend(labels, colors) {
   const ordinal = d3.scaleOrdinal()
     .domain(labels)
     .range(colors);
-  const svg = d3.select('svg');
+  const svg = d3.select('.main-svg');
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')
@@ -30,7 +30,7 @@ function linearLegend(width, colors) {
   const linear = d3.scaleLinear()
     .domain(width)
     .range(colors);
-  const svg = d3.select('svg');
+  const svg = d3.select('.main-svg');
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')

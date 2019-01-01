@@ -11,7 +11,7 @@ function move(event) {
   const eventElement = event.srcElement;
   const eventElementPosition = eventElement.getBoundingClientRect();
   let xTooltip = eventElementPosition.left + eventElementPosition.width / 2;
-  let yTooltip = eventElementPosition.top + eventElementPosition.height / 2 - 28;
+  let yTooltip = eventElementPosition.top + eventElementPosition.height / 2;
   if (xTooltip + tooltipPosition.width > parentPosition.width) {
     xTooltip -= tooltipPosition.width;
   }

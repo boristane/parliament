@@ -6,19 +6,22 @@
   <title>Data Viz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/dropdown.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/checkbox.css" />
   </head>
 <body>
   <div class="user-input">
-    <form class="user-inpput">
-      <select id="map-type">
-        <option value="results">Results</option>
-        <option value="changed">Changed</option>
-        <option value="gender">Gender</option>
-        <option value="turnout">Turnout</option>
-        <option value="majority">Majority</option>
-        <option value="share">Party Share</option>
-      </select>
-      <input type="checkbox" id="cities-box">Display Cities<br>
+    <form>
+      <div>
+        <select id="map-type">
+          <option value="results">Results</option>
+          <option value="changed">Changed</option>
+          <option value="gender">Gender</option>
+          <option value="turnout">Turnout</option>
+          <option value="majority">Majority</option>
+          <option value="share">Party Share</option>
+        </select>
+      </div>
       <div>
         <select id="select-party">
           <option value="Con">Con</option>
@@ -28,6 +31,12 @@
           <option value="SNP">SNP</option>
           <option value="DUP">DUP</option>
         </select>
+      </div>
+      <div>
+        <label for="cities-box" class="checkbox-container"> Display Cities
+            <input type="checkbox" id="cities-box" name="cities-box">
+            <span class="checkmark"></span>
+        </label>
       </div>
     </form>
   </div>
