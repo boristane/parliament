@@ -60,9 +60,8 @@ selectParty.addEventListener('change', (e) => {
 });
 
 function handleMouseOver(d) {
-  tooltip.div.transition()
-    .duration(200)
-    .style('opacity', 0.9);
+  tooltip.show();
+  tooltip.move(d3.event);
   const winningRow = d.properties.results.find(row => row.Elected === 'TRUE');
   const winningCandidate = {
     constituency: winningRow.ConstituencyName,
@@ -74,9 +73,6 @@ function handleMouseOver(d) {
     electionShare: winningRow.ShareValue,
     position: 'MP',
   };
-  tooltip.div
-    .style('left', `${d3.event.pageX}px`)
-    .style('top', `${d3.event.pageY - 28}px`);
 
   setTimeout(() => {
     tooltip.displayConstituency(winningCandidate);
@@ -113,9 +109,7 @@ function handleMouseOver(d) {
 }
 
 function handleMouseOut() {
-  /* tooltip.div.transition()
-    .duration(200)
-    .style('opacity', 0); */
+  tooltip.hide();
 }
 
 function reset() {

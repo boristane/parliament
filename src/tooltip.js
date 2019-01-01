@@ -2,6 +2,41 @@ import * as d3 from 'd3';
 
 const div = d3.select('.tooltip');
 
+function move(event) {
+  console.log(event);
+  const tooltip = d3.select('.tooltip');
+  const tooltipPosition = tooltip.node().getBoundingClientRect();
+  const parent = tooltip.node().parentNode;
+  const parentPosition = parent.getBoundingClientRect();
+  const eventElement = event.srcElement;
+  const eventElementPosition = eventElement.getBoundingClientRect();
+  let xTooltip = eventElementPosition.left + eventElementPosition.width / 2;
+  let yTooltip = eventElementPosition.top + eventElementPosition.height / 2 - 28;
+  if (xTooltip + tooltipPosition.width > parentPosition.width) {
+    xTooltip -= tooltipPosition.width;
+  }
+  if (yTooltip + tooltipPosition.height > parentPosition.height) {
+    yTooltip -= tooltipPosition.height;
+  }
+  tooltip
+    .style('left', `${xTooltip}px`)
+    .style('top', `${yTooltip}px`);
+}
+
+function show() {
+  const tooltip = d3.select('.tooltip');
+  return tooltip.transition()
+    .duration(200)
+    .style('opacity', 0.9);
+}
+
+function hide() {
+  const tooltip = d3.select('.tooltip');
+  return tooltip.transition()
+    .duration(200)
+    .style('opacity', 0);
+}
+
 function displayCandidate(candidate) {
   document.querySelector('.tooltip .results .party-logo').src = candidate.partyLogo;
   document.querySelector('.tooltip .results .name').textContent = candidate.name;
@@ -204,11 +239,13 @@ function displayConstituencyResults(candidates) {
 }
 
 export default {
-  div,
   displayConstituency,
   displayCandidate,
   displayChanged,
   displayGender,
   displayTurnout,
   displayConstituencyResults,
+  move,
+  hide,
+  show,
 };
