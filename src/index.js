@@ -94,14 +94,28 @@ function handleMouseOver(d) {
       const turnout = winningRow.TurnoutPercentageValue;
       const electorate = winningRow.Electorate;
       tooltip.displayTurnout(turnout, electorate);
+    } else if (mapType === 'majority') {
+      const constituencyRows = d.properties.results
+        .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
+      const candidates = constituencyRows.map((elt) => {
+        const party = partyDetails.find(e => e.PartyShortName === elt.PartyShortName);
+        const color = party ? party.color : 'lightgray';
+        return {
+          name: elt.CandidateDisplayName,
+          share: elt.ShareValue,
+          partyShortName: elt.PartyShortName,
+          color,
+        };
+      });
+      tooltip.displayConstituencyResults(candidates, partyDetails);
     }
   }, 200);
 }
 
 function handleMouseOut() {
-  tooltip.div.transition()
+  /* tooltip.div.transition()
     .duration(200)
-    .style('opacity', 0);
+    .style('opacity', 0); */
 }
 
 function reset() {

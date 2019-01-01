@@ -138,6 +138,71 @@ function displayTurnout(turnout, electorate) {
     });
 }
 
+function displayConstituencyResults(candidates) {
+  document.querySelector('.tooltip .majority-div').classList.remove('none');
+  const margin = {
+    top: 5,
+    right: 5,
+    bottom: 0,
+    left: 5,
+  };
+  const width = 180 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
+
+  d3.select('.majority-chart').remove();
+  const chart = d3.select('.tooltip .majority-chart-container')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('class', 'majority-chart')
+    .append('g');
+
+  const partyNameHeight = 15;
+  const yScale = d3.scaleLinear()
+    .range([height - partyNameHeight, 0])
+    .domain([0, d3.max(candidates.map(elt => elt.share))]);
+
+  const barWidth = 30;
+  chart.selectAll('rect')
+    .data(candidates.sort((a, b) => b.share - a.share))
+    .enter()
+    .append('rect')
+    .attr('x', (d, i) => i * (barWidth + 5) + 5)
+    .attr('y', d => yScale(d.share))
+    .attr('width', barWidth)
+    .attr('height', d => height - partyNameHeight - yScale(d.share))
+    .attr('fill', d => d.color);
+  chart.append('g')
+    .selectAll('text')
+    .data(candidates.sort((a, b) => b.share - a.share))
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'middle')
+    .text(d => `${parseFloat(d.share * 100).toFixed(0)}%`)
+    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('y', (d) => {
+      if (height - partyNameHeight - yScale(d.share) < 20) return yScale(d.share);
+      return yScale(d.share) + 15;
+    })
+    .style('font-size', '13px');
+  chart.append('g')
+    .selectAll('text')
+    .data(candidates.sort((a, b) => b.share - a.share))
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'middle')
+    .text(d => `${d.partyShortName.toUpperCase()}`)
+    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('y', height - 5)
+    .style('font-weight', 'bold')
+    .style('font-size', (d) => {
+      if (d.partyShortName.length > 6) return '0px';
+      if (d.partyShortName.length > 3) return '7px';
+      return '10px';
+    });
+}
+
 export default {
   div,
   displayConstituency,
@@ -145,4 +210,5 @@ export default {
   displayChanged,
   displayGender,
   displayTurnout,
+  displayConstituencyResults,
 };
