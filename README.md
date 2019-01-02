@@ -11,7 +11,7 @@ It currently allows visualisation of data from the [House of Commons](https://ww
 # Data Source
 
 -   [2017 General Election](https://en.wikipedia.org/wiki/2017_United_Kingdom_general_election) data from the [House of Commons Library](https://commonslibrary.parliament.uk/parliament-and-elections/elections-elections/constituency-data-election-results/)
--   Map of GB from [Dr Martin Chorley](https://github.com/martinjc/UK-GeoJSON) GitHub [repo](https://github.com/martinjc/UK-GeoJSON)
+-   Map of GB from [Dr Martin Chorley](https://github.com/martinjc) GitHub [repo](https://github.com/martinjc/UK-GeoJSON)
 
 # License
 
