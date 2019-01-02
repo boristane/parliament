@@ -43,5 +43,15 @@
     "PartyShortName": "Spk",
     "color": "#d3d3d3",
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Crowned_Portcullis.svg/401px-Crowned_Portcullis.svg.png"
+  },
+  {
+    "PartyShortName": "SF",
+    "color": "#006941",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/Sinn_F%C3%A9in_Logo.svg/480px-Sinn_F%C3%A9in_Logo.svg.png"
+  },
+  {
+    "PartyShortName": "Ind",
+    "color": "#DC4BBB",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/EtruscanI-01.svg/347px-EtruscanI-01.svg.png"
   }
 ]

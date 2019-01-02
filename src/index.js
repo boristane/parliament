@@ -6,7 +6,7 @@ import cities from './cities';
 import mapUtils from './map.utils';
 import details from './details';
 
-const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
+const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
 const padding = 5;
 const width = document.getElementById('content').clientWidth - padding;
 const height = document.getElementById('content').clientHeight - padding;
@@ -156,7 +156,7 @@ fetch(geoJsonURL)
     d3.csv('./data/Current-Parliament-Election-Results.csv')
       .then((resultsData) => {
         mapData.features.forEach((constituency) => {
-          const id = constituency.properties.PCON13CD;
+          const id = constituency.properties.PCON13CD || constituency.properties.PC_ID;
           const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
           constituency.properties.results = constituencyResults;
         });
