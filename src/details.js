@@ -1,6 +1,27 @@
 import * as d3 from 'd3';
 
 function getPartyResults(mapData, partyDetails) {
+  const results = [];
+  mapData.features.forEach((constituency) => {
+    const constituencyResults = constituency.properties.results;
+    constituencyResults.forEach((candidate) => {
+      let result = results.find(r => r.party === candidate.PartyShortName);
+      if (result) {
+        result.votes += parseInt(candidate.Votes, 10);
+      } else {
+        const party = partyDetails.find(e => e.PartyShortName === candidate.PartyShortName);
+        const color = party ? party.color : 'lightgray';
+        result = {
+          party: candidate.PartyShortName,
+          votes: parseInt(candidate.Votes, 10),
+          numSeats: 0,
+          color,
+          delta: 0,
+        };
+        results.push(result);
+      }
+    });
+  });
   const winningPartyPerConstituency = [];
   mapData.features.forEach((constituency) => {
     const winningRow = constituency.properties.results.find(row => row.Elected === 'TRUE');
@@ -10,40 +31,17 @@ function getPartyResults(mapData, partyDetails) {
       hold: winningRow.ResultHoldGain,
     });
   });
-  const results = [];
   winningPartyPerConstituency.forEach((constituency) => {
-    let result = results.find(r => r.party === constituency.party);
-    if (result) {
-      result.numSeats += 1;
-    } else {
-      const party = partyDetails.find(e => e.PartyShortName === constituency.party);
-      const color = party ? party.color : 'lightgray';
-      result = {
-        party: constituency.party,
-        numSeats: 1,
-        color,
-        delta: 0,
-      };
-      results.push(result);
-    }
+    const result = results.find(r => r.party === constituency.party);
+    result.numSeats += 1;
     if (constituency.hold.includes(`${result.party} gain`)) {
       result.delta += 1;
       const arr = constituency.hold.split(' ');
-      let takenFrom = results.find(r => r.party === arr[arr.length - 1]);
-      if (takenFrom) {
-        takenFrom.delta -= 1;
-      } else {
-        const party = partyDetails.find(e => e.PartyShortName === arr[arr.length - 1]);
-        const color = party ? party.color : 'lightgray';
-        takenFrom = {
-          party: arr[arr.length],
-          numSeats: 0,
-          color,
-          delta: -1,
-        };
-      }
+      const takenFrom = results.find(r => r.party === arr[arr.length - 1]);
+      takenFrom.delta -= 1;
     }
   });
+  console.table(results);
   return results;
 }
 
@@ -74,8 +72,12 @@ function displayNationalResults(mapData, partyDetails) {
     .domain([0, d3.max(results.map(result => result.numSeats))]);
 
   const barWidth = 30;
+  const numBars = 8;
+
+  const seatsResults = results.filter(r => r.numSeats >= 1).sort((a, b) => b.numSeats - a.numSeats)
+    .slice(0, numBars);
   chart.selectAll('rect')
-    .data(results.sort((a, b) => b.numSeats - a.numSeats))
+    .data(seatsResults)
     .enter()
     .append('rect')
     .attr('x', (d, i) => i * (barWidth + 5) + 5)
@@ -85,7 +87,7 @@ function displayNationalResults(mapData, partyDetails) {
     .attr('fill', d => d.color);
   chart.append('g')
     .selectAll('text')
-    .data(results.sort((a, b) => b.numSeats - a.numSeats))
+    .data(seatsResults)
     .enter()
     .append('text')
     .attr('text-anchor', 'middle')
@@ -95,7 +97,7 @@ function displayNationalResults(mapData, partyDetails) {
     .style('font-size', '13px');
   chart.append('g')
     .selectAll('text')
-    .data(results.sort((a, b) => b.numSeats - a.numSeats))
+    .data(seatsResults)
     .enter()
     .append('text')
     .attr('text-anchor', 'middle')
@@ -105,7 +107,56 @@ function displayNationalResults(mapData, partyDetails) {
     .style('font-weight', 'bold')
     .style('font-size', (d) => {
       if (d.party.length > 6) return '0px';
-      if (d.party.length > 3) return '8px';
+      if (d.party.length > 3) return '10px';
+      return '12px';
+    });
+
+  d3.select('.national-results-votes-chart').remove();
+  const chartVotes = d3.select('.details .results-chart-votes-container')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('class', 'national-results-votes-chart')
+    .append('g');
+
+  const yVotesScale = d3.scaleLinear()
+    .range([height - partyNameHeight, 15])
+    .domain([0, d3.max(results.map(result => result.votes))]);
+
+  const votesResults = results.sort((a, b) => b.votes - a.votes).slice(0, numBars);
+  chartVotes.selectAll('rect')
+    .data(votesResults)
+    .enter()
+    .append('rect')
+    .attr('x', (d, i) => i * (barWidth + 5) + 5)
+    .attr('y', d => yVotesScale(d.votes))
+    .attr('width', barWidth)
+    .attr('height', d => height - partyNameHeight - yVotesScale(d.votes))
+    .attr('fill', d => d.color);
+  chartVotes.append('g')
+    .selectAll('text')
+    .data(votesResults)
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'middle')
+    .text(d => `${(d.votes / 1000000).toFixed(1)}M`)
+    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('y', d => yVotesScale(d.votes) - 3)
+    .style('font-size', '13px');
+  chartVotes.append('g')
+    .selectAll('text')
+    .data(votesResults)
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'middle')
+    .text(d => `${d.party.toUpperCase()}`)
+    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('y', height - 5)
+    .style('font-weight', 'bold')
+    .style('font-size', (d) => {
+      if (d.party.length > 6) return '0px';
+      if (d.party.length > 3) return '10px';
       return '12px';
     });
 }
@@ -113,6 +164,7 @@ function displayNationalResults(mapData, partyDetails) {
 function displayNationalChanged(mapData, partyDetails) {
   const results = getPartyResults(mapData, partyDetails);
   document.querySelector('.details .changed').classList.remove('none');
+
 }
 
 export default {

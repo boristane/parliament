@@ -152,8 +152,9 @@ div.tooltip {
   right: 0;
   bottom: 0;
   border: solid 1px #eee;
+  border-radius: 4px 0 0 0;
   background-color: rgba(255, 255, 255, 0.7);
-  padding: 30px;
+  padding: 10px 30px 30px 30px;
   z-index: -3;
 }
 
