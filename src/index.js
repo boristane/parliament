@@ -4,6 +4,7 @@ import utils from './utils';
 import tooltip from './tooltip';
 import cities from './cities';
 import mapUtils from './map.utils';
+import details from './details';
 
 const geoJsonURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const padding = 5;
@@ -37,10 +38,13 @@ citiesCheckbox.addEventListener('click', (e) => {
 
 selectMapType.addEventListener('change', (e) => {
   const mapType = e.target.options[e.target.selectedIndex].value;
+  document.querySelectorAll('.details .section').forEach(elt => elt.classList.add('none'));
   if (mapType === 'results') {
     mapUtils.displayResults(partyDetails);
+    details.displayNationalResults(mapData, partyDetails);
   } else if (mapType === 'changed') {
     mapUtils.displayChangedConstituencies();
+    details.displayNationalChanged(mapData, partyDetails);
   } else if (mapType === 'gender') {
     mapUtils.displayGender();
   } else if (mapType === 'turnout') {
@@ -177,6 +181,8 @@ fetch(geoJsonURL)
                 const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
                 return utils.getColor(winnigPartyCode, partyDetails);
               });
+            // Display the national results in the details box
+            details.displayNationalResults(mapData, partyDetails);
 
             // Add zoom and pan events
             function zoomed() {

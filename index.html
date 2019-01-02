@@ -41,37 +41,51 @@
     </form>
   </div>
 
+
+  <div class="tooltip">
+    <h1 class="constituency"></h1>
+    <div class="results">
+        <div class="party-container">
+          <img src="" alt="party" class="party-logo">
+          <div>
+            <p style="margin: 0">
+              <span class="name"></span> <span class="position"></span>
+            </p>
+            <p class="gender"></p>
+            <p class="share"></p>
+          </div>
+        </div>
+    </div>
+    <div class="changed section none">
+        <div class="gain"></div>
+        <div class="lost"></div>
+    </div>
+    <div class="section none gender-div">
+      <h2 class="text" style="text-align: center"><span class="no-candidates" style="font-weight: bold;"></span> Candidates</h2>
+    </div>
+    <div class="section none turnout-div">
+      <h2 class="text" style="margin-bottom: 5px;">Electorate: <span class="electorate" style="font-weight: bold;"></span></h2>
+      <div class="turnout-chart-container"></div>
+      <h2 class="text" style="text-align: right; font-size: 15px;"><span class="turnout" style="font-weight: bold;"></span> Turnout</h2>
+    </div>
+    <div class="section none majority-div">
+      <div class="majority-chart-container"></div>
+    </div>
+  </div>
+
   <div id="content">
-      <div class="tooltip">
-        <h1 class="constituency"></h1>
-        <div class="results">
-            <div class="party-container">
-              <img src="" alt="party" class="party-logo">
-              <div>
-                <p style="margin: 0">
-                  <span class="name"></span> <span class="position"></span>
-                </p>
-                <p class="gender"></p>
-                <p class="share"></p>
-              </div>
-            </div>
-        </div>
-        <div class="changed section none">
-            <div class="gain"></div>
-            <div class="lost"></div>
-        </div>
-        <div class="section none gender-div">
-          <h2 class="text" style="text-align: center"><span class="no-candidates" style="font-weight: bold;"></span> Candidates</h2>
-        </div>
-        <div class="section none turnout-div">
-          <h2 class="text" style="margin-bottom: 5px;">Electorate: <span class="electorate" style="font-weight: bold;"></span></h2>
-          <div class="turnout-chart-container"></div>
-          <h2 class="text" style="text-align: right; font-size: 15px;"><span class="turnout" style="font-weight: bold;"></span> Turnout</h2>
-        </div>
-        <div class="section none majority-div">
-          <div class="majority-chart-container"></div>
-        </div>
-      </div>
+    
+  </div>
+
+  <div class="details">
+    <div class="section results none">
+      <h2 class="header">GB Results - Seats</h2>
+      <div class="results-chart-container"></div>
+    </div>
+    <div class="section changed none">
+      <h2 class="header">GB Changes in Seats</h2>
+      <div class="results-chart-container"></div>
+    </div>
   </div>
 </body>
 <script src="dist/bundle.js"></script>

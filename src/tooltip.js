@@ -1,9 +1,6 @@
 import * as d3 from 'd3';
 
-const div = d3.select('.tooltip');
-
 function move(event) {
-  console.log(event);
   const tooltip = d3.select('.tooltip');
   const tooltipPosition = tooltip.node().getBoundingClientRect();
   const parent = tooltip.node().parentNode;
@@ -12,6 +9,14 @@ function move(event) {
   const eventElementPosition = eventElement.getBoundingClientRect();
   let xTooltip = eventElementPosition.left + eventElementPosition.width / 2;
   let yTooltip = eventElementPosition.top + eventElementPosition.height / 2;
+  if (xTooltip < 0 || yTooltip < 0) {
+    xTooltip = event.clientX;
+    yTooltip = event.clientY;
+  }
+  if (xTooltip > parentPosition.width || yTooltip > parentPosition.height) {
+    xTooltip = event.clientX;
+    yTooltip = event.clientY;
+  }
   if (xTooltip + tooltipPosition.width > parentPosition.width) {
     xTooltip -= tooltipPosition.width;
   }
@@ -27,7 +32,7 @@ function show() {
   const tooltip = d3.select('.tooltip');
   return tooltip.transition()
     .duration(200)
-    .style('opacity', 0.9);
+    .style('opacity', 1);
 }
 
 function hide() {
@@ -227,13 +232,15 @@ function displayConstituencyResults(candidates) {
     .enter()
     .append('text')
     .attr('text-anchor', 'middle')
-    .text(d => `${d.partyShortName.toUpperCase()}`)
+    .text((d) => {
+      if (d.partyShortName.length > 6) return 'OTH';
+      return `${d.partyShortName.toUpperCase()}`;
+    })
     .attr('x', (d, i) => i * (barWidth + 5) + 20)
     .attr('y', height - 5)
     .style('font-weight', 'bold')
     .style('font-size', (d) => {
-      if (d.partyShortName.length > 6) return '0px';
-      if (d.partyShortName.length > 3) return '7px';
+      if (d.partyShortName.length > 3) return '8px';
       return '10px';
     });
 }
