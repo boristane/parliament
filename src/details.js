@@ -41,7 +41,6 @@ function getPartyResults(mapData, partyDetails) {
       takenFrom.delta -= 1;
     }
   });
-  console.table(results);
   return results;
 }
 
@@ -164,7 +163,87 @@ function displayNationalResults(mapData, partyDetails) {
 function displayNationalChanged(mapData, partyDetails) {
   const results = getPartyResults(mapData, partyDetails);
   document.querySelector('.details .changed').classList.remove('none');
+  const margin = {
+    top: 5,
+    right: 5,
+    bottom: 0,
+    left: 5,
+  };
+  const width = 300 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
 
+  d3.select('.national-changed-chart').remove();
+  const chart = d3.select('.details .changed-chart-container')
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('class', 'national-changed-chart')
+    .append('g');
+
+  const scoreHeight = 15;
+  const deltas = results.map(result => result.delta);
+  const xScale = d3.scaleLinear()
+    .range([0, width / 2 - 1])
+    .domain([0, d3.max(deltas.map(delta => (delta > 0 ? delta : -delta)))]);
+
+  const barHeight = 20;
+  const numBars = 6;
+
+  const deltaResults = results.filter(r => r.delta !== 0).sort((a, b) => b.delta - a.delta)
+    .slice(0, numBars);
+  chart.selectAll('rect')
+    .data(deltaResults)
+    .enter()
+    .append('rect')
+    .attr('x', (d) => {
+      if (d.delta > 0) return width / 2 + 1;
+      return width / 2 - xScale(Math.abs(d.delta));
+    })
+    .attr('y', (d, i) => i * (barHeight + 5 + scoreHeight) + 5)
+    .attr('width', d => xScale(Math.abs(d.delta)))
+    .attr('height', barHeight)
+    .attr('fill', d => d.color);
+  chart.append('g')
+    .append('rect')
+    .attr('x', width / 2)
+    .attr('y', 0)
+    .attr('width', 1)
+    .attr('height', height)
+    .attr('fill', 'lightgray');
+  chart.append('g')
+    .selectAll('text')
+    .data(deltaResults)
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'left')
+    .text(d => `${d.party.toUpperCase()}`)
+    .attr('x', (d) => {
+      if (d.delta > 0) return width / 2 + 1;
+      const partyNameWidth = d.party.length * 9.3;
+      return width / 2 - partyNameWidth - 1;
+    })
+    .attr('y', (d, i) => i * (barHeight + 5 + scoreHeight) + 5 + 2 * scoreHeight)
+    .style('font-weight', 'bold')
+    .style('font-size', '13px');
+  chart.append('g')
+    .selectAll('text')
+    .data(deltaResults)
+    .enter()
+    .append('text')
+    .attr('text-anchor', 'left')
+    .text(d => (d.delta < 0 ? d.delta : `+${d.delta}`))
+    .attr('x', (d) => {
+      const partyNameWidth = d.party.length * 9.3;
+      if (d.delta > 0) return width / 2 + partyNameWidth + 4;
+      return width / 2 - partyNameWidth - (Math.abs(d.delta) < 10 ? 15 : 25);
+    })
+    .attr('y', (d, i) => i * (barHeight + 5 + scoreHeight) + 5 + 2 * scoreHeight)
+    .style('font-size', '13px')
+    .attr('fill', (d) => {
+      if (d.delta < 0) return 'red';
+      return 'green';
+    });
 }
 
 export default {
