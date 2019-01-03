@@ -41,7 +41,7 @@
   },
   {
     "PartyShortName": "Spk",
-    "color": "#d3d3d3",
+    "color": "#eee",
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Crowned_Portcullis.svg/401px-Crowned_Portcullis.svg.png"
   },
   {
@@ -53,5 +53,15 @@
     "PartyShortName": "Ind",
     "color": "#DC4BBB",
     "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/EtruscanI-01.svg/347px-EtruscanI-01.svg.png"
+  },
+  {
+    "PartyShortName": "UUP",
+    "color": "#7200e6",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/2/20/Uuplogo.jpg"
+  },
+  {
+    "PartyShortName": "SDLP",
+    "color": "#42f442",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/a/a5/Social_Democratic_and_Labour_Party.png"
   }
 ]

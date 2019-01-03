@@ -64,4 +64,9 @@ export default [
     long: -2.095400,
     lat: 57.147480,
   },
+  {
+    name: 'Belfast',
+    long: -5.9301,
+    lat: 54.5973,
+  },
 ];

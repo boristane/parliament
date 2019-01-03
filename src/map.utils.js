@@ -61,15 +61,43 @@ function displayResults(partyDetails) {
   d3.select('.map-legend').remove();
 }
 
-function displayChangedConstituencies() {
-  const gold = '#FFDF00';
-  const grey = '#C0C0C0';
+function displayPartyResults(partyCode, partyDetails) {
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
-      const hold = d.properties.results[0].ResultHoldGain.split(' ').includes('hold');
+      const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
+      if (winnigPartyCode === partyCode) return utils.getColor(winnigPartyCode, partyDetails);
+      return 'lightgray';
+    });
+  d3.select('.map-legend').remove();
+}
+
+function displayChangedConstituencies() {
+  const gold = '#FFDF00';
+  const grey = 'lightgray';
+  d3.selectAll('.map-svg path')
+    .attr('fill', (d) => {
+      const hold = d.properties.results[0].ResultHoldGain.includes('hold');
       return hold ? grey : gold;
     });
-  ordinalLegend(['Gain', 'Hold'], [gold, grey]);
+  ordinalLegend(['Changed', 'Held'], [gold, grey]);
+}
+
+function displayPartyChangedConstituencies(partyShortName) {
+  const green = 'green';
+  const red = 'red';
+  const grey = 'lightgray';
+  d3.selectAll('.map-svg path')
+    .attr('fill', (d) => {
+      const holdGain = d.properties.results[0].ResultHoldGain;
+      const hold = holdGain.includes('hold');
+      const correctParty = holdGain.includes(partyShortName);
+      const won = holdGain.split(' ')[0] === partyShortName;
+      if (hold) return grey;
+      if (!correctParty) return grey;
+      if (won) return green;
+      return red;
+    });
+  ordinalLegend(['Gained', 'Lost'], [green, red]);
 }
 
 function displayGender() {
@@ -180,7 +208,9 @@ function displayPartyShare(mapData, partyDetails, partyShortName) {
 
 export default {
   displayResults,
+  displayPartyResults,
   displayChangedConstituencies,
+  displayPartyChangedConstituencies,
   displayGender,
   displayTurnout,
   displayMajority,
