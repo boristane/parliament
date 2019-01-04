@@ -3,12 +3,14 @@ function getColor(code, colors) {
   return color ? color.color : '#fff';
 }
 
-function ceilToNext5Percent(num) {
-  return Math.ceil(num / 0.05) * 0.05;
+function ceilToNextPercent(num, p) {
+  const a = p / 100;
+  return Math.ceil(num / a) * a;
 }
 
-function floorToNext5Percent(num) {
-  return Math.floor(num / 0.05) * 0.05;
+function floorToNextPercent(num, p) {
+  const a = p / 100;
+  return Math.floor(num / a) * a;
 }
 
 function clamp(num, min, max) {
@@ -30,7 +32,7 @@ function colorLuminance(hex, lumFactor) {
 
 export default {
   getColor,
-  ceilToNext5Percent,
-  floorToNext5Percent,
+  ceilToNextPercent,
+  floorToNextPercent,
   colorLuminance,
 };

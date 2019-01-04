@@ -25,10 +25,10 @@ function ordinalLegend(labels, colors) {
     .style('opacity', 1);
 }
 
-function linearLegend(width, colors) {
-  const numCells = (width[1] - width[0]) / 5;
+function linearLegend(width, colors, step = 5) {
+  const numCells = (width[1] - width[0]) / step + 1;
   const linear = d3.scaleLinear()
-    .domain(width)
+    .domain(width.map(w => w / 100))
     .range(colors);
   const svg = d3.select('.main-svg');
   d3.select('.map-legend').remove();
@@ -162,8 +162,8 @@ function displayTurnout(mapData) {
   console.log('turnout');
   console.log(min);
   console.log(max);
-  const minValue = utils.floorToNext5Percent(d3.min(turnoutData));
-  const maxValue = utils.ceilToNext5Percent(d3.max(turnoutData));
+  const minValue = utils.floorToNextPercent(d3.min(turnoutData), 5);
+  const maxValue = utils.ceilToNextPercent(d3.max(turnoutData), 5);
   const color = d3.scaleLinear()
     .domain([minValue, maxValue])
     .range([lightBlue, darkBlue]);
@@ -172,7 +172,7 @@ function displayTurnout(mapData) {
       const turnout = Number.parseFloat(d.properties.results[0].TurnoutPercentageValue);
       return color(turnout);
     });
-  linearLegend([minValue, maxValue], [lightBlue, darkBlue]);
+  linearLegend([minValue * 100, maxValue * 100], [lightBlue, darkBlue]);
 }
 
 function displayMajority(mapData) {
@@ -198,8 +198,8 @@ function displayMajority(mapData) {
   console.log('majority');
   console.log(min);
   console.log(max);
-  const minValue = utils.floorToNext5Percent(d3.min(majorityData));
-  const maxValue = utils.ceilToNext5Percent(d3.max(majorityData));
+  const minValue = utils.floorToNextPercent(d3.min(majorityData), 20);
+  const maxValue = utils.ceilToNextPercent(d3.max(majorityData), 20);
   const color = d3.scaleLinear()
     .domain([minValue, maxValue])
     .range([lightRed, darkRed]);
@@ -208,7 +208,7 @@ function displayMajority(mapData) {
       const majority = Number.parseFloat(d.properties.results.find(row => row.Elected === 'TRUE').MajorityPercentageValue);
       return color(majority);
     });
-  linearLegend([minValue, maxValue], [lightRed, darkRed]);
+  linearLegend([minValue * 100, maxValue * 100], [lightRed, darkRed], 20);
 }
 
 function displayPartyShare(mapData, partyDetails, partyShortName) {
@@ -220,8 +220,8 @@ function displayPartyShare(mapData, partyDetails, partyShortName) {
     const participated = results.find(row => row.PartyShortName === partyShortName);
     return participated ? Number.parseFloat(participated.ShareValue) : undefined;
   });
-  const minValue = utils.floorToNext5Percent(d3.min(shareData));
-  const maxValue = utils.ceilToNext5Percent(d3.max(shareData));
+  const minValue = utils.floorToNextPercent(d3.min(shareData), 10);
+  const maxValue = utils.ceilToNextPercent(d3.max(shareData), 10);
   const color = d3.scaleLinear()
     .domain([0, 1])
     .range([lightColor, darkColor]);
@@ -231,7 +231,7 @@ function displayPartyShare(mapData, partyDetails, partyShortName) {
       const participated = d.properties.results.find(row => row.PartyShortName === partyShortName);
       return participated ? color(Number.parseFloat(participated.ShareValue)) : defaultColor;
     });
-  linearLegend([minValue, maxValue], [color(minValue), color(maxValue)]);
+  linearLegend([minValue * 100, maxValue * 100], [color(minValue), color(maxValue)], 10);
 }
 
 export default {
