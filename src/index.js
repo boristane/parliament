@@ -48,6 +48,7 @@ selectMapType.addEventListener('change', (e) => {
     details.displayNationalChanged(mapData, partyDetails);
   } else if (mapType === 'gender') {
     mapUtils.displayGender();
+    details.displayNationalGender(mapData, partyDetails);
   } else if (mapType === 'turnout') {
     mapUtils.displayTurnout(mapData);
   } else if (mapType === 'majority') {
@@ -198,7 +199,7 @@ fetch(geoJsonGBURL)
                 zoom = d3.zoom()
                   .scaleExtent([1, 50])
                   .extent([[0, 0], [width, height]])
-                  .translateExtent([[0, 0], [width, height]])
+                  // .translateExtent([[0, 0], [width, height]])
                   .on('zoom', zoomed);
                 d3.select('.main-svg').call(zoom);
 

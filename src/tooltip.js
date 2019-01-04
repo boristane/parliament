@@ -121,8 +121,8 @@ function displayGender(genders) {
     .attr('height', yScale.bandwidth())
     .attr('width', d => width - xScale(d.percentage))
     .attr('fill', (d) => {
-      if (d.gender === 'Male') return '#ADD8E6';
-      return '#551A8B';
+      if (d.gender === 'Male') return '#658B53';
+      return '#1EE6BC';
     });
 
   chart.selectAll()

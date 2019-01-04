@@ -72,7 +72,7 @@ function displayPartyResults(partyCode, partyDetails) {
 }
 
 function displayChangedConstituencies() {
-  const gold = '#FFDF00';
+  const gold = '#D2691E';
   const grey = 'lightgray';
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
@@ -101,14 +101,42 @@ function displayPartyChangedConstituencies(partyShortName) {
 }
 
 function displayGender() {
-  const purple = '#551A8B';
-  const blue = '#ADD8E6';
+  const blue = '#1EE6BC';
+  const ivory = '#658B53';
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
       const female = d.properties.results.find(row => row.Elected === 'TRUE').CandidateGender === 'Female';
-      return female ? purple : blue;
+      return female ? blue : ivory;
     });
-  ordinalLegend(['Female', 'Male'], [purple, blue]);
+  ordinalLegend(['Female', 'Male'], [blue, ivory]);
+}
+
+function displayPartyGender(partyShortName) {
+  const blue = '#1EE6BC';
+  const green = '#658B53';
+  const grey = 'lightgray';
+  d3.selectAll('.map-svg path')
+    .attr('fill', (d) => {
+      const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
+      if (winnigPartyCode !== partyShortName) return grey;
+      const female = d.properties.results.find(row => row.Elected === 'TRUE').CandidateGender === 'Female';
+      return female ? blue : green;
+    });
+  ordinalLegend(['Female', 'Male'], [blue, green]);
+}
+
+function displayPartyGenderCandidates(partyShortName) {
+  const blue = '#1EE6BC';
+  const green = '#658B53';
+  const grey = 'lightgray';
+  d3.selectAll('.map-svg path')
+    .attr('fill', (d) => {
+      const participated = d.properties.results.find(row => row.PartyShortName === partyShortName);
+      if (!participated) return grey;
+      const female = d.properties.results.find(row => row.PartyShortName === partyShortName).CandidateGender === 'Female';
+      return female ? blue : green;
+    });
+  ordinalLegend(['Female', 'Male'], [blue, green]);
 }
 
 function displayTurnout(mapData) {
@@ -215,4 +243,6 @@ export default {
   displayTurnout,
   displayMajority,
   displayPartyShare,
+  displayPartyGender,
+  displayPartyGenderCandidates,
 };
