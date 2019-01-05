@@ -13,6 +13,11 @@ function floorToNextPercent(num, p) {
   return Math.floor(num / a) * a;
 }
 
+function roundToNextPercent(num, p) {
+  const a = p / 100;
+  return Math.round(num / a) * a;
+}
+
 function clamp(num, min, max) {
   if (num < min) return min;
   if (num > max) return max;
@@ -34,5 +39,6 @@ export default {
   getColor,
   ceilToNextPercent,
   floorToNextPercent,
+  roundToNextPercent,
   colorLuminance,
 };

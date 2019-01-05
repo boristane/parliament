@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
 import map from './map.utils';
+import utils from './utils';
+import mapUtils from './map.utils';
 
 function getPartyResults(mapData, partyDetails) {
   const results = [];
@@ -416,8 +418,130 @@ function displayNationalGender(mapData, partyDetails) {
   verticalBarChart(femaleCandidatesPlot, results, partyDetails);
 }
 
+function displayNationalTurnout(mapData) {
+  document.querySelector('.details .turnout').classList.remove('none');
+  const turnoutData = mapData.features.map((constituency) => {
+    const { results } = constituency.properties;
+    return {
+      name: results[0].ConstituencyName,
+      turnout: results[0].TurnoutPercentageValue,
+    };
+  });
+  const bins = [];
+  turnoutData.forEach((constituency) => {
+    const bin = bins.find(b => Math.abs(constituency.turnout - b.value) <= 0.01);
+    if (bin) bin.numOccurences += 1;
+    else {
+      bins.push({
+        value: utils.roundToNextPercent(constituency.turnout, 2),
+        numOccurences: 1,
+      });
+    }
+  });
+  bins.sort((a, b) => a.value - b.value);
+
+  const margin = {
+    top: 5,
+    right: 5,
+    bottom: 40,
+    left: 45,
+  };
+  const width = 350 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
+  const chartClass = 'national-turnout-histogram-chart';
+  const chartContainerSelector = '.details .turnout-chart-container';
+  const darkBlue = '#003366';
+  const lightBlue = '#ADD8E6';
+
+  d3.select(`.${chartClass}`).remove();
+  const chart = d3.select(chartContainerSelector)
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('class', chartClass)
+    .append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+  const yScale = d3.scaleLinear()
+    .range([height, 0])
+    .domain([0, d3.max(bins.map(b => b.numOccurences)) + 10]);
+
+  chart.append('g')
+    .call(d3.axisLeft(yScale));
+
+  const xScale = d3.scaleBand()
+    .range([0, width])
+    .domain(bins.map(b => d3.format('.0f')(b.value * 100)))
+    .padding(0.2);
+
+  chart.append('g')
+    .attr('transform', `translate(0, ${height})`)
+    .call(d3.axisBottom(xScale));
+
+  const color = d3.scaleLinear()
+    .domain([d3.min(bins.map(b => b.value)), d3.max(bins.map(b => b.value))])
+    .range([lightBlue, darkBlue]);
+
+  let clicked;
+  function handleClick(d) {
+    if (clicked === d.value) {
+      mapUtils.displayTurnout(mapData);
+      clicked = null;
+    } else {
+      clicked = d.value;
+      mapUtils.displayTurnout(mapData, [d.value - 0.01, d.value + 0.01]);
+    }
+  }
+  function handleMouseOver() {
+    d3.select(this)
+      .transition()
+      .ease(d3.easeElastic)
+      .duration(300)
+      .attr('width', parseFloat(this.getAttribute('width')) + 3)
+      .attr('x', parseFloat(this.getAttribute('x')) - 1.5);
+  }
+  function handleMouseOut(d) {
+    d3.select(this)
+      .transition()
+      .ease(d3.easeElastic)
+      .duration(300)
+      .attr('width', xScale.bandwidth())
+      .attr('x', xScale(d3.format('.0f')(d.value * 100)));
+  }
+
+  chart.selectAll('rect')
+    .data(bins)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(d3.format('.0f')(d.value * 100)))
+    .attr('y', d => yScale(d.numOccurences))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d => height - yScale(d.numOccurences))
+    .attr('fill', d => color(d.value))
+    .classed('pointer', true)
+    .on('click', handleClick)
+    .on('mouseover', handleMouseOver)
+    .on('mouseout', handleMouseOut);
+
+  chart.append('text')
+    .attr('x', -(height / 2))
+    .attr('y', -30)
+    .attr('transform', 'rotate(-90)')
+    .attr('text-anchor', 'middle')
+    .text('Num Constituencies')
+    .attr('font-size', '12px');
+
+  chart.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 30)
+    .attr('text-anchor', 'middle')
+    .text('Turnout (%)')
+    .attr('font-size', '12px');
+}
+
 export default {
   displayNationalResults,
   displayNationalChanged,
   displayNationalGender,
+  displayNationalTurnout,
 };

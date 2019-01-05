@@ -51,6 +51,7 @@ selectMapType.addEventListener('change', (e) => {
     details.displayNationalGender(mapData, partyDetails);
   } else if (mapType === 'turnout') {
     mapUtils.displayTurnout(mapData);
+    details.displayNationalTurnout(mapData);
   } else if (mapType === 'majority') {
     mapUtils.displayMajority(mapData);
   } else if (mapType === 'share') {

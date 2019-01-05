@@ -139,9 +139,10 @@ function displayPartyGenderCandidates(partyShortName) {
   ordinalLegend(['Female', 'Male'], [blue, green]);
 }
 
-function displayTurnout(mapData) {
+function displayTurnout(mapData, band = [0, 1]) {
   const darkBlue = '#003366';
   const lightBlue = '#ADD8E6';
+  const grey = 'lightgray';
   const turnoutData = mapData.features.map((constituency) => {
     const { results } = constituency.properties;
     const majority = Number.parseFloat(results[0].TurnoutPercentageValue);
@@ -170,6 +171,7 @@ function displayTurnout(mapData) {
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
       const turnout = Number.parseFloat(d.properties.results[0].TurnoutPercentageValue);
+      if (turnout < band[0] || turnout > band[1]) return grey;
       return color(turnout);
     });
   linearLegend([minValue * 100, maxValue * 100], [lightBlue, darkBlue]);
