@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
+import statMethods from 'stat-methods';
 import map from './map.utils';
 import utils from './utils';
-import mapUtils from './map.utils';
 
 function getPartyResults(mapData, partyDetails) {
   const results = [];
@@ -424,7 +424,7 @@ function displayNationalTurnout(mapData) {
     const { results } = constituency.properties;
     return {
       name: results[0].ConstituencyName,
-      turnout: results[0].TurnoutPercentageValue,
+      turnout: parseFloat(results[0].TurnoutPercentageValue),
     };
   });
   const bins = [];
@@ -464,7 +464,7 @@ function displayNationalTurnout(mapData) {
 
   const yScale = d3.scaleLinear()
     .range([height, 0])
-    .domain([0, d3.max(bins.map(b => b.numOccurences)) + 10]);
+    .domain([0, d3.max(bins.map(b => b.numOccurences))]);
 
   chart.append('g')
     .call(d3.axisLeft(yScale));
@@ -485,11 +485,11 @@ function displayNationalTurnout(mapData) {
   let clicked;
   function handleClick(d) {
     if (clicked === d.value) {
-      mapUtils.displayTurnout(mapData);
+      map.displayTurnout(mapData);
       clicked = null;
     } else {
       clicked = d.value;
-      mapUtils.displayTurnout(mapData, [d.value - 0.01, d.value + 0.01]);
+      map.displayTurnout(mapData, [d.value - 0.01, d.value + 0.01]);
     }
   }
   function handleMouseOver() {
@@ -537,6 +537,22 @@ function displayNationalTurnout(mapData) {
     .attr('text-anchor', 'middle')
     .text('Turnout (%)')
     .attr('font-size', '12px');
+
+  document.getElementById('turnout-average').textContent = d3.format('.1%')(statMethods.mean(turnoutData.map(d => d.turnout)));
+  document.getElementById('turnout-stdev').textContent = d3.format('.1%')(statMethods.pStdev(turnoutData.map(d => d.turnout)));
+  turnoutData.sort((a, b) => a.turnout - b.turnout);
+  const maxTurnout = turnoutData[turnoutData.length - 1];
+  const minTurnout = turnoutData[0];
+  document.getElementById('turnout-max').textContent = `${maxTurnout.name} (${d3.format('.1%')(maxTurnout.turnout)})`;
+  document.getElementById('turnout-max').classList.add('pointer', 'highlightable');
+  document.getElementById('turnout-max').addEventListener('click', () => {
+    map.displayTurnout(mapData, [maxTurnout.turnout, maxTurnout.turnout]);
+  });
+  document.getElementById('turnout-min').textContent = `${minTurnout.name} (${d3.format('.1%')(minTurnout.turnout)})`;
+  document.getElementById('turnout-min').classList.add('pointer', 'highlightable');
+  document.getElementById('turnout-min').addEventListener('click', () => {
+    map.displayTurnout(mapData, [minTurnout.turnout, minTurnout.turnout]);
+  });
 }
 
 export default {

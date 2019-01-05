@@ -148,21 +148,6 @@ function displayTurnout(mapData, band = [0, 1]) {
     const majority = Number.parseFloat(results[0].TurnoutPercentageValue);
     return majority;
   });
-  const min = mapData.features.find((constituency) => {
-    const { results } = constituency.properties;
-    const majority = Number.parseFloat(results[0].TurnoutPercentageValue);
-    if (majority === d3.min(turnoutData)) return true;
-    return false;
-  });
-  const max = mapData.features.find((constituency) => {
-    const { results } = constituency.properties;
-    const majority = Number.parseFloat(results[0].TurnoutPercentageValue);
-    if (majority === d3.max(turnoutData)) return true;
-    return false;
-  });
-  console.log('turnout');
-  console.log(min);
-  console.log(max);
   const minValue = utils.floorToNextPercent(d3.min(turnoutData), 5);
   const maxValue = utils.ceilToNextPercent(d3.max(turnoutData), 5);
   const color = d3.scaleLinear()

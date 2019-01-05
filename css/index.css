@@ -168,6 +168,11 @@ div.tooltip {
   color: grey
 }
 
+.details .stats {
+  font-size: 14px; 
+  color: grey;
+}
+
 .gender-chart-text {
   font-size: 12px;
 }
@@ -197,4 +202,5 @@ div.tooltip {
 
 .highlightable:hover {
  fill: rgb(253, 101, 101);
+ color: rgb(253, 101, 101);
 }
