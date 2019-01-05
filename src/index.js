@@ -54,6 +54,7 @@ selectMapType.addEventListener('change', (e) => {
     details.displayNationalTurnout(mapData);
   } else if (mapType === 'majority') {
     mapUtils.displayMajority(mapData);
+    details.displayNationalMajority(mapData);
   } else if (mapType === 'share') {
     const userSelectedParty = selectParty[selectParty.selectedIndex].value;
     mapUtils.displayPartyShare(mapData, partyDetails, userSelectedParty);
@@ -86,11 +87,25 @@ function handleMouseOver(d) {
     tooltip.displayCandidate(winningCandidate);
     const mapType = selectMapType.options[selectMapType.selectedIndex].value;
     document.querySelectorAll('.tooltip .section').forEach(elt => elt.classList.add('none'));
+    const constituencyRows = d.properties.results
+      .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
+    const candidates = constituencyRows.map((elt) => {
+      const party = partyDetails.find(e => e.PartyShortName === elt.PartyShortName);
+      const color = party ? party.color : 'lightgray';
+      return {
+        name: elt.CandidateDisplayName,
+        share: elt.ShareValue,
+        partyShortName: elt.PartyShortName,
+        color,
+      };
+    });
+
+    if (mapType === 'results') {
+      tooltip.displayConstituencyResults(candidates, partyDetails);
+    }
     if (mapType === 'changed') {
       tooltip.displayChanged(partyDetails, winningRow.ResultHoldGain);
     } else if (mapType === 'gender') {
-      const constituencyRows = d.properties.results
-        .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
       const genders = constituencyRows.map(row => row.CandidateGender);
       tooltip.displayGender(genders);
     } else if (mapType === 'turnout') {
@@ -98,18 +113,6 @@ function handleMouseOver(d) {
       const electorate = winningRow.Electorate;
       tooltip.displayTurnout(turnout, electorate);
     } else if (mapType === 'majority') {
-      const constituencyRows = d.properties.results
-        .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
-      const candidates = constituencyRows.map((elt) => {
-        const party = partyDetails.find(e => e.PartyShortName === elt.PartyShortName);
-        const color = party ? party.color : 'lightgray';
-        return {
-          name: elt.CandidateDisplayName,
-          share: elt.ShareValue,
-          partyShortName: elt.PartyShortName,
-          color,
-        };
-      });
       tooltip.displayConstituencyResults(candidates, partyDetails);
     }
   }, 200);

@@ -288,6 +288,108 @@ function horizontalBarChart(obj, results) {
     .on('click', handleClick);
 }
 
+function histogram(obj, bins) {
+  const {
+    margin,
+    width,
+    height,
+    chartClass,
+    chartContainerSelector,
+    darkColor,
+    lightColor,
+    step,
+    mapData,
+    textFormat,
+    xLabel,
+    onClick
+  } = obj;
+
+  d3.select(`.${chartClass}`).remove();
+  const chart = d3.select(chartContainerSelector)
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('class', chartClass)
+    .append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+  const yScale = d3.scaleLinear()
+    .range([height, 0])
+    .domain([0, d3.max(bins.map(b => b.numOccurences))]);
+
+  chart.append('g')
+    .call(d3.axisLeft(yScale));
+
+  const xScale = d3.scaleBand()
+    .range([0, width])
+    .domain(bins.map(b => textFormat(b.value * 100)))
+    .padding(0.2);
+
+  chart.append('g')
+    .attr('transform', `translate(0, ${height})`)
+    .call(d3.axisBottom(xScale));
+
+  const color = d3.scaleLinear()
+    .domain([d3.min(bins.map(b => b.value)), d3.max(bins.map(b => b.value))])
+    .range([lightColor, darkColor]);
+
+  let clicked;
+  function handleClick(d) {
+    if (clicked === d.value) {
+      onClick(mapData);
+      clicked = null;
+    } else {
+      clicked = d.value;
+      onClick(mapData, [d.value - step, d.value + step]);
+    }
+  }
+  function handleMouseOver() {
+    d3.select(this)
+      .transition()
+      .ease(d3.easeElastic)
+      .duration(300)
+      .attr('width', parseFloat(this.getAttribute('width')) + 3)
+      .attr('x', parseFloat(this.getAttribute('x')) - 1.5);
+  }
+  function handleMouseOut(d) {
+    d3.select(this)
+      .transition()
+      .ease(d3.easeElastic)
+      .duration(300)
+      .attr('width', xScale.bandwidth())
+      .attr('x', xScale(textFormat(d.value * 100)));
+  }
+
+  chart.selectAll('rect')
+    .data(bins)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(textFormat(d.value * 100)))
+    .attr('y', d => yScale(d.numOccurences))
+    .attr('width', xScale.bandwidth())
+    .attr('height', d => height - yScale(d.numOccurences))
+    .attr('fill', d => color(d.value))
+    .classed('pointer', true)
+    .on('click', handleClick)
+    .on('mouseover', handleMouseOver)
+    .on('mouseout', handleMouseOut);
+
+  chart.append('text')
+    .attr('x', -(height / 2))
+    .attr('y', -30)
+    .attr('transform', 'rotate(-90)')
+    .attr('text-anchor', 'middle')
+    .text('Num Constituencies')
+    .attr('font-size', '12px');
+
+  chart.append('text')
+    .attr('x', width / 2)
+    .attr('y', height + 30)
+    .attr('text-anchor', 'middle')
+    .text(xLabel)
+    .attr('font-size', '12px');
+}
+
 function displayNationalResults(mapData, partyDetails) {
   const results = getPartyResults(mapData, partyDetails);
   document.querySelector('.details .results').classList.remove('none');
@@ -420,6 +522,7 @@ function displayNationalGender(mapData, partyDetails) {
 
 function displayNationalTurnout(mapData) {
   document.querySelector('.details .turnout').classList.remove('none');
+  const step = 0.01;
   const turnoutData = mapData.features.map((constituency) => {
     const { results } = constituency.properties;
     return {
@@ -429,11 +532,11 @@ function displayNationalTurnout(mapData) {
   });
   const bins = [];
   turnoutData.forEach((constituency) => {
-    const bin = bins.find(b => Math.abs(constituency.turnout - b.value) <= 0.01);
+    const bin = bins.find(b => Math.abs(constituency.turnout - b.value) <= step);
     if (bin) bin.numOccurences += 1;
     else {
       bins.push({
-        value: utils.roundToNextPercent(constituency.turnout, 2),
+        value: utils.roundToNextPercent(constituency.turnout, 100 * step * 2),
         numOccurences: 1,
       });
     }
@@ -446,97 +549,21 @@ function displayNationalTurnout(mapData) {
     bottom: 40,
     left: 45,
   };
-  const width = 350 - margin.left - margin.right;
-  const height = 250 - margin.top - margin.bottom;
-  const chartClass = 'national-turnout-histogram-chart';
-  const chartContainerSelector = '.details .turnout-chart-container';
-  const darkBlue = '#003366';
-  const lightBlue = '#ADD8E6';
-
-  d3.select(`.${chartClass}`).remove();
-  const chart = d3.select(chartContainerSelector)
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .attr('class', chartClass)
-    .append('g')
-    .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-  const yScale = d3.scaleLinear()
-    .range([height, 0])
-    .domain([0, d3.max(bins.map(b => b.numOccurences))]);
-
-  chart.append('g')
-    .call(d3.axisLeft(yScale));
-
-  const xScale = d3.scaleBand()
-    .range([0, width])
-    .domain(bins.map(b => d3.format('.0f')(b.value * 100)))
-    .padding(0.2);
-
-  chart.append('g')
-    .attr('transform', `translate(0, ${height})`)
-    .call(d3.axisBottom(xScale));
-
-  const color = d3.scaleLinear()
-    .domain([d3.min(bins.map(b => b.value)), d3.max(bins.map(b => b.value))])
-    .range([lightBlue, darkBlue]);
-
-  let clicked;
-  function handleClick(d) {
-    if (clicked === d.value) {
-      map.displayTurnout(mapData);
-      clicked = null;
-    } else {
-      clicked = d.value;
-      map.displayTurnout(mapData, [d.value - 0.01, d.value + 0.01]);
-    }
-  }
-  function handleMouseOver() {
-    d3.select(this)
-      .transition()
-      .ease(d3.easeElastic)
-      .duration(300)
-      .attr('width', parseFloat(this.getAttribute('width')) + 3)
-      .attr('x', parseFloat(this.getAttribute('x')) - 1.5);
-  }
-  function handleMouseOut(d) {
-    d3.select(this)
-      .transition()
-      .ease(d3.easeElastic)
-      .duration(300)
-      .attr('width', xScale.bandwidth())
-      .attr('x', xScale(d3.format('.0f')(d.value * 100)));
-  }
-
-  chart.selectAll('rect')
-    .data(bins)
-    .enter()
-    .append('rect')
-    .attr('x', d => xScale(d3.format('.0f')(d.value * 100)))
-    .attr('y', d => yScale(d.numOccurences))
-    .attr('width', xScale.bandwidth())
-    .attr('height', d => height - yScale(d.numOccurences))
-    .attr('fill', d => color(d.value))
-    .classed('pointer', true)
-    .on('click', handleClick)
-    .on('mouseover', handleMouseOver)
-    .on('mouseout', handleMouseOut);
-
-  chart.append('text')
-    .attr('x', -(height / 2))
-    .attr('y', -30)
-    .attr('transform', 'rotate(-90)')
-    .attr('text-anchor', 'middle')
-    .text('Num Constituencies')
-    .attr('font-size', '12px');
-
-  chart.append('text')
-    .attr('x', width / 2)
-    .attr('y', height + 30)
-    .attr('text-anchor', 'middle')
-    .text('Turnout (%)')
-    .attr('font-size', '12px');
+  const obj = {
+    margin,
+    width: 350 - margin.left - margin.right,
+    height: 250 - margin.top - margin.bottom,
+    chartClass: 'national-turnout-histogram-chart',
+    chartContainerSelector: '.details .turnout-chart-container',
+    darkColor: '#003366',
+    lightColor: '#ADD8E6',
+    textFormat: d3.format('.0f'),
+    mapData,
+    step,
+    xLabel: 'Turnout (%)',
+    onClick: map.displayTurnout,
+  };
+  histogram(obj, bins);
 
   document.getElementById('turnout-average').textContent = d3.format('.1%')(statMethods.mean(turnoutData.map(d => d.turnout)));
   document.getElementById('turnout-stdev').textContent = d3.format('.1%')(statMethods.pStdev(turnoutData.map(d => d.turnout)));
@@ -546,12 +573,74 @@ function displayNationalTurnout(mapData) {
   document.getElementById('turnout-max').textContent = `${maxTurnout.name} (${d3.format('.1%')(maxTurnout.turnout)})`;
   document.getElementById('turnout-max').classList.add('pointer', 'highlightable');
   document.getElementById('turnout-max').addEventListener('click', () => {
-    map.displayTurnout(mapData, [maxTurnout.turnout, maxTurnout.turnout]);
+    map.displayMajority(mapData, [maxTurnout.turnout, maxTurnout.turnout]);
   });
   document.getElementById('turnout-min').textContent = `${minTurnout.name} (${d3.format('.1%')(minTurnout.turnout)})`;
   document.getElementById('turnout-min').classList.add('pointer', 'highlightable');
   document.getElementById('turnout-min').addEventListener('click', () => {
-    map.displayTurnout(mapData, [minTurnout.turnout, minTurnout.turnout]);
+    map.displayMajority(mapData, [minTurnout.turnout, minTurnout.turnout]);
+  });
+}
+
+function displayNationalMajority(mapData) {
+  document.querySelector('.details .majority').classList.remove('none');
+  const step = 0.02;
+  const majorityData = mapData.features.map((constituency) => {
+    const { results } = constituency.properties;
+    return {
+      name: results[0].ConstituencyName,
+      majority: parseFloat(results[0].MajorityPercentageValue),
+    };
+  });
+  const bins = [];
+  majorityData.forEach((constituency) => {
+    const bin = bins.find(b => Math.abs(constituency.majority - b.value) <= step);
+    if (bin) bin.numOccurences += 1;
+    else {
+      bins.push({
+        value: utils.roundToNextPercent(constituency.majority, 100 * step * 2),
+        numOccurences: 1,
+      });
+    }
+  });
+  bins.sort((a, b) => a.value - b.value);
+
+  const margin = {
+    top: 5,
+    right: 5,
+    bottom: 40,
+    left: 45,
+  };
+  const obj = {
+    margin,
+    width: 350 - margin.left - margin.right,
+    height: 250 - margin.top - margin.bottom,
+    chartClass: 'national-majority-histogram-chart',
+    chartContainerSelector: '.details .majority-chart-container',
+    darkColor: '#8b0000',
+    lightColor: '#d39393',
+    textFormat: d3.format('.0f'),
+    mapData,
+    step,
+    xLabel: 'Majority (%)',
+    onClick: map.displayMajority,
+  };
+  histogram(obj, bins);
+
+  document.getElementById('majority-average').textContent = d3.format('.1%')(statMethods.mean(majorityData.map(d => d.majority)));
+  document.getElementById('majority-stdev').textContent = d3.format('.1%')(statMethods.pStdev(majorityData.map(d => d.majority)));
+  majorityData.sort((a, b) => a.majority - b.majority);
+  const maxMajority = majorityData[majorityData.length - 1];
+  const minMajority = majorityData[0];
+  document.getElementById('majority-max').textContent = `${maxMajority.name} (${d3.format('.1%')(maxMajority.majority)})`;
+  document.getElementById('majority-max').classList.add('pointer', 'highlightable');
+  document.getElementById('majority-max').addEventListener('click', () => {
+    map.displayMajority(mapData, [maxMajority.majority, maxMajority.majority]);
+  });
+  document.getElementById('majority-min').textContent = `${minMajority.name} (${d3.format('.1%')(minMajority.majority)})`;
+  document.getElementById('majority-min').classList.add('pointer', 'highlightable');
+  document.getElementById('majority-min').addEventListener('click', () => {
+    map.displayMajority(mapData, [minMajority.majority, minMajority.majority]);
   });
 }
 
@@ -560,4 +649,5 @@ export default {
   displayNationalChanged,
   displayNationalGender,
   displayNationalTurnout,
+  displayNationalMajority,
 };

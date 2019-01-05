@@ -162,29 +162,15 @@ function displayTurnout(mapData, band = [0, 1]) {
   linearLegend([minValue * 100, maxValue * 100], [lightBlue, darkBlue]);
 }
 
-function displayMajority(mapData) {
+function displayMajority(mapData, band = [0, 1]) {
   const darkRed = '#8b0000';
   const lightRed = '#d39393';
+  const grey = 'lightgray';
   const majorityData = mapData.features.map((constituency) => {
     const { results } = constituency.properties;
     const majority = Number.parseFloat(results.find(row => row.Elected === 'TRUE').MajorityPercentageValue);
     return majority;
   });
-  const min = mapData.features.find((constituency) => {
-    const { results } = constituency.properties;
-    const majority = Number.parseFloat(results.find(row => row.Elected === 'TRUE').MajorityPercentageValue);
-    if (majority === d3.min(majorityData)) return true;
-    return false;
-  });
-  const max = mapData.features.find((constituency) => {
-    const { results } = constituency.properties;
-    const majority = Number.parseFloat(results.find(row => row.Elected === 'TRUE').MajorityPercentageValue);
-    if (majority === d3.max(majorityData)) return true;
-    return false;
-  });
-  console.log('majority');
-  console.log(min);
-  console.log(max);
   const minValue = utils.floorToNextPercent(d3.min(majorityData), 20);
   const maxValue = utils.ceilToNextPercent(d3.max(majorityData), 20);
   const color = d3.scaleLinear()
@@ -193,6 +179,7 @@ function displayMajority(mapData) {
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
       const majority = Number.parseFloat(d.properties.results.find(row => row.Elected === 'TRUE').MajorityPercentageValue);
+      if (majority < band[0] || majority > band[1]) return grey;
       return color(majority);
     });
   linearLegend([minValue * 100, maxValue * 100], [lightRed, darkRed], 20);
@@ -227,8 +214,8 @@ export default {
   displayChangedConstituencies,
   displayPartyChangedConstituencies,
   displayGender,
-  displayTurnout,
   displayMajority,
+  displayTurnout,
   displayPartyShare,
   displayPartyGender,
   displayPartyGenderCandidates,
