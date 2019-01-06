@@ -10,7 +10,7 @@ const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/mast
 const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
 const width = document.getElementById('content').clientWidth;
 const height = document.getElementById('content').clientHeight;
-const mapOffsetRight = -230;
+const mapOffsetRight = -document.querySelector('.user-input').clientWidth / 2;
 const white = '#fff';
 let partyDetails;
 let mapData;
@@ -68,8 +68,8 @@ selectParty.addEventListener('change', (e) => {
 });
 
 function handleMouseOver(d) {
+  const e = d3.event;
   tooltip.show();
-  tooltip.move(d3.event);
   const winningRow = d.properties.results.find(row => row.Elected === 'TRUE');
   const winningCandidate = {
     constituency: winningRow.ConstituencyName,
@@ -90,7 +90,7 @@ function handleMouseOver(d) {
     const constituencyRows = d.properties.results
       .filter(row => row.ConstituencyName === winningRow.ConstituencyName);
     const candidates = constituencyRows.map((elt) => {
-      const party = partyDetails.find(e => e.PartyShortName === elt.PartyShortName);
+      const party = partyDetails.find(el => el.PartyShortName === elt.PartyShortName);
       const color = party ? party.color : 'lightgray';
       return {
         name: elt.CandidateDisplayName,
@@ -115,6 +115,7 @@ function handleMouseOver(d) {
     } else if (mapType === 'majority') {
       tooltip.displayConstituencyResults(candidates, partyDetails);
     }
+    tooltip.move(e);
   }, 200);
 }
 
@@ -225,6 +226,23 @@ fetch(geoJsonGBURL)
                 document.getElementById('reset-zoom').addEventListener('click', reset);
                 d3.select('.main-svg')
                   .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
+
+                // Postcode search
+                const postcodeForm = document.getElementById('postcode');
+                function handlePostcode(e) {
+                  e.preventDefault();
+                  const postcode = this.postcode.value.split(' ').join('');
+                  fetch(`https://api.postcodes.io/postcodes/${postcode}`)
+                    .then(response => response.json())
+                    .then((postcodeData) => {
+                      if (postcodeData.status !== 200) return console.log('Error');
+                      const postcodeConstituency = postcodeData.result.parliamentary_constituency;
+                      const d = mapData.features
+                        .find(p => p.properties.results[0].ConstituencyName === postcodeConstituency);
+                      clicked(d);
+                    });
+                }
+                postcodeForm.addEventListener('submit', handlePostcode);
 
                 // Add cities to svg
                 const citiesGroup = svg.append('g')

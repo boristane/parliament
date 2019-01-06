@@ -20,34 +20,37 @@
     <a href="./views/about.html" style="font-size: 12px;">about</a>
   </div>
   <div class="user-input card">
-    <form>
-      <div>
-        <select id="map-type">
-          <option value="results">Results</option>
-          <option value="changed">Changed</option>
-          <option value="gender">Gender</option>
-          <option value="turnout">Turnout</option>
-          <option value="majority">Majority</option>
-          <option value="share">Party Share</option>
-        </select>
-      </div>
-      <div>
-        <select id="select-party">
-          <option value="Con">Con</option>
-          <option value="Lab">Lab</option>
-          <option value="PC">PC</option>
-          <option value="UKIP">UKIP</option>
-          <option value="SNP">SNP</option>
-          <option value="DUP">DUP</option>
-        </select>
-      </div>
-      <div>
-        <label for="cities-box" class="checkbox-container"> Display Cities
-            <input type="checkbox" id="cities-box" name="cities-box">
-            <span class="checkmark"></span>
-        </label>
-      </div>
-    </form>
+    <div>
+      <select id="map-type">
+        <option value="results">Results</option>
+        <option value="changed">Changed</option>
+        <option value="gender">Gender</option>
+        <option value="turnout">Turnout</option>
+        <option value="majority">Majority</option>
+        <option value="share">Party Share</option>
+      </select>
+    </div>
+    <div>
+      <select id="select-party">
+        <option value="Con">Con</option>
+        <option value="Lab">Lab</option>
+        <option value="PC">PC</option>
+        <option value="UKIP">UKIP</option>
+        <option value="SNP">SNP</option>
+        <option value="DUP">DUP</option>
+      </select>
+    </div>
+    <div>
+      <form id="postcode">
+        <input type="text" name="postcode" placeholder="Enter a postcode">
+      </form> 
+    </div>
+    <div>
+      <label for="cities-box" class="checkbox-container"> Display Cities
+          <input type="checkbox" id="cities-box" name="cities-box">
+          <span class="checkmark"></span>
+      </label>
+    </div>
   </div>
 
 

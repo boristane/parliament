@@ -79,11 +79,11 @@ function displayGender(genders) {
   const data = [
     {
       gender: 'Male',
-      percentage: femalePercentage,
+      percentage: malePercentage,
     },
     {
       gender: 'Female',
-      percentage: malePercentage,
+      percentage: femalePercentage,
     },
   ];
   const width = 180;
@@ -108,10 +108,6 @@ function displayGender(genders) {
   chart.append('g')
     .call(d3.axisLeft(yScale));
 
-  chart.append('g')
-    .attr('transform', `translate(0, ${height})`)
-    .call(d3.axisBottom(xScale));
-
   chart.selectAll('rect')
     .data(data)
     .enter()
@@ -119,7 +115,7 @@ function displayGender(genders) {
     .attr('x', 0.5)
     .attr('y', d => yScale(d.gender))
     .attr('height', yScale.bandwidth())
-    .attr('width', d => width - xScale(d.percentage))
+    .attr('width', d => xScale(d.percentage))
     .attr('fill', (d) => {
       if (d.gender === 'Male') return '#658B53';
       return '#1EE6BC';
@@ -130,10 +126,10 @@ function displayGender(genders) {
     .enter()
     .append('text')
     .attr('x', 5)
-    .attr('y', d => (yScale(d.gender) + yScale.bandwidth() / 2 + 5))
+    .attr('y', d => yScale(d.gender) + yScale.bandwidth() / 2 + 3)
     .attr('class', 'gender-chart-text')
     .attr('fill', 'black')
-    .text(d => d.gender);
+    .text(d => `${d.gender} (${Math.round(d.percentage * genders.length)})`);
 }
 
 function displayTurnout(turnout, electorate) {
