@@ -5,11 +5,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Data Viz</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
   <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="./css/dropdown.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="./css/checkbox.css" />
   </head>
 <body>
+  <div class="map-controls">
+    <div id="zoom-in" class="pointer highlightable box card"><i class="fas fa-plus"></i></div>
+    <div id="zoom-out" class="pointer highlightable box card"><i class="fas fa-minus"></i></div>
+    <div id="reset-zoom" class="pointer highlightable box card"><i class="fas fa-redo-alt"></i></div>
+  </div>
+  <div style="position: absolute; right: 30px; bottom: 8px">
+    <a href="./views/about.html" style="font-size: 12px;">about</a>
+  </div>
   <div class="user-input card">
     <form>
       <div>

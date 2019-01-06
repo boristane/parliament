@@ -6,8 +6,6 @@ body {
   height: 100vh;
   position: absolute;
   z-index: -10;
-  display: grid;
-  grid-template-columns: 80% 20%;
 }
 
 #content{
@@ -15,7 +13,7 @@ body {
   height: 100vh;
   box-sizing: border-box;
   margin: 0;
-  padding: 5px;
+  padding: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -51,7 +49,7 @@ body {
 
 .constituency-map:hover {
   stroke-width: 0.3px;
-  stroke: white;
+  stroke: rgb(253, 101, 101);
   cursor: pointer;
 }
 
@@ -203,4 +201,40 @@ div.tooltip {
 .highlightable:hover {
  fill: rgb(253, 101, 101);
  color: rgb(253, 101, 101);
+}
+
+a {
+  text-decoration: none;
+  color: grey;
+  transition: color 0.2s ease-in-out;
+}
+
+a:visited {
+  text-decoration: none;
+  color: grey;
+}
+
+a:hover{
+  text-decoration: none;
+  color: rgb(253, 101, 101);
+}
+
+.map-controls {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.map-controls .box {
+  width: 30px;
+  height: 30px; 
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 6px;
+  margin: 5px;
+  font-size: 15px;
+  box-sizing: border-box;
+  text-align: center;
+  font-weight: 100;
 }

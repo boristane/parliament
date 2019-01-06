@@ -8,9 +8,9 @@ import details from './details';
 
 const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
-const padding = 5;
-const width = document.getElementById('content').clientWidth - padding;
-const height = document.getElementById('content').clientHeight - padding;
+const width = document.getElementById('content').clientWidth;
+const height = document.getElementById('content').clientHeight;
+const mapOffsetRight = -230;
 const white = '#fff';
 let partyDetails;
 let mapData;
@@ -128,7 +128,21 @@ function reset() {
 
   d3.select('.main-svg').transition()
     .duration(750)
-    .call(zoom.transform, d3.zoomIdentity);
+    .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
+}
+
+function zoomIn() {
+  const scale = 3;
+  return d3.select('.main-svg').transition()
+    .duration(750)
+    .call(zoom.scaleBy, scale);
+}
+
+function zoomOut() {
+  const scale = 1 / 3;
+  return d3.select('.main-svg').transition()
+    .duration(750)
+    .call(zoom.scaleBy, scale);
 }
 
 function clicked(d) {
@@ -206,6 +220,11 @@ fetch(geoJsonGBURL)
                   // .translateExtent([[0, 0], [width, height]])
                   .on('zoom', zoomed);
                 d3.select('.main-svg').call(zoom);
+                document.getElementById('zoom-in').addEventListener('click', zoomIn);
+                document.getElementById('zoom-out').addEventListener('click', zoomOut);
+                document.getElementById('reset-zoom').addEventListener('click', reset);
+                d3.select('.main-svg')
+                  .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
 
                 // Add cities to svg
                 const citiesGroup = svg.append('g')

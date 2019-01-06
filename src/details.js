@@ -301,7 +301,7 @@ function histogram(obj, bins) {
     mapData,
     textFormat,
     xLabel,
-    onClick
+    onClick,
   } = obj;
 
   d3.select(`.${chartClass}`).remove();
