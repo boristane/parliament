@@ -11,7 +11,7 @@ const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/mast
 const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
 const width = document.getElementById('content').clientWidth;
 const height = document.getElementById('content').clientHeight;
-const mapOffsetRight = -document.querySelector('.user-input').clientWidth / 2;
+const mapOffsetRight = 0; // -document.querySelector('.user-input').clientWidth / 2;
 const white = '#fff';
 let partyDetails;
 let mapData;
@@ -212,6 +212,17 @@ document.getElementById('majority-max').addEventListener('click', (e) => {
   let constituency = e.target.textContent.split('(')[0];
   constituency = constituency.slice(0, constituency.length - 1);
   zoomOn(constituency);
+});
+
+// Responsiveness
+details.toggleDetails();
+document.querySelector('.i-details').addEventListener('click', () => {
+  document.querySelector('.user-input').classList.toggle('collapsed');
+  document.querySelector('.user-input .fas').classList.toggle('fa-angle-left');
+  document.querySelector('.user-input .fas').classList.toggle('fa-angle-right');
+  document.querySelector('.details').classList.add('collapsed');
+  document.querySelector('.details .fas').classList.add('fa-angle-left');
+  document.querySelector('.details .fas').classList.remove('fa-angle-right');
 });
 
 fetch(geoJsonGBURL)

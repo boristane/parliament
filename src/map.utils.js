@@ -11,7 +11,7 @@ function ordinalLegend(labels, colors) {
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')
-    .attr('transform', 'translate(30,100)')
+    .attr('transform', 'translate(30,115)')
     .style('opacity', 0);
   const legendOrdinal = d3Legend.legendColor()
     .shape('path', d3.symbol().type(d3.symbolSquare).size(400)())
@@ -35,7 +35,7 @@ function linearLegend(width, colors, step = 5) {
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')
-    .attr('transform', 'translate(20,100)')
+    .attr('transform', 'translate(20,115)')
     .style('opacity', 0);
   const legendLinear = d3Legend.legendColor()
     .shapeWidth(30)

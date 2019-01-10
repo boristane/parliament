@@ -644,10 +644,23 @@ function displayNationalMajority(mapData) {
   });
 }
 
+function toggleDetails() {
+  document.querySelector('.t-details').addEventListener('click', () => {
+    document.querySelector('.details').classList.toggle('collapsed');
+    document.querySelector('.user-input').classList.add('collapsed');
+
+    document.querySelector('.details .fas').classList.toggle('fa-angle-left');
+    document.querySelector('.details .fas').classList.toggle('fa-angle-right');
+    document.querySelector('.user-input .fas').classList.add('fa-angle-left');
+    document.querySelector('.user-input .fas').classList.remove('fa-angle-right');
+  });
+}
+
 export default {
   displayNationalResults,
   displayNationalChanged,
   displayNationalGender,
   displayNationalTurnout,
   displayNationalMajority,
+  toggleDetails,
 };
