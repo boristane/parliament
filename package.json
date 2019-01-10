@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --watch --info-verbosity verbose"
+    "build-watch": "webpack --watch --info-verbosity verbose",
+    "build": "webpack"
   },
   "author": "Boris Tane",
   "license": "ISC",

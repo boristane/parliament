@@ -7,7 +7,6 @@ module.exports = {
     filename: 'bundle.js',
   },
   mode: 'production',
-  watch: true,
   watchOptions: {
     ignored: /node_modules/,
   },
