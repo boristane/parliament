@@ -9,17 +9,18 @@
   <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="./css/dropdown.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="./css/checkbox.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/loader.css" />
   </head>
 <body>
   <div class="map-controls">
-    <div id="zoom-in" class="pointer highlightable box card"><i class="fas fa-plus"></i></div>
-    <div id="zoom-out" class="pointer highlightable box card"><i class="fas fa-minus"></i></div>
-    <div id="reset-zoom" class="pointer highlightable box card"><i class="fas fa-redo-alt"></i></div>
+    <div id="zoom-in" class="pointer highlightable box card none"><i class="fas fa-plus"></i></div>
+    <div id="zoom-out" class="pointer highlightable box card none"><i class="fas fa-minus"></i></div>
+    <div id="reset-zoom" class="pointer highlightable box card none"><i class="fas fa-redo-alt"></i></div>
   </div>
   <div style="position: absolute; right: 30px; bottom: 8px">
     <a href="./views/about.html" style="font-size: 12px;">about</a>
   </div>
-  <div class="user-input card collapsed">
+  <div class="user-input card collapsed none">
     <div class="toggle i-details card pointer highlightable">
         <i class="fas fa-angle-left"></i>
     </div>
@@ -30,11 +31,11 @@
         <option value="gender">Gender Representation</option>
         <option value="turnout">Turnout</option>
         <option value="majority">Majority</option>
-        <option value="share">Party Share</option>
+        <option value="share" style="display: none">Party Share</option>
       </select>
     </div>
     <div>
-      <select id="select-party">
+      <select id="select-party" style="display: none">
         <option value="Con">Con</option>
         <option value="Lab">Lab</option>
         <option value="PC">PC</option>
@@ -46,6 +47,9 @@
     <div>
       <form id="postcode">
         <input type="text" name="postcode" placeholder="Enter a postcode">
+        <div class="submit-box" >
+            <p id="search-submit" value="search"><i class="fas fa-search"></i></p>
+        </div>
       </form> 
     </div>
     <div>
@@ -56,13 +60,14 @@
     </div>
   </div>
 
-  <div class="card title-box">
+  <div class="card title-box none">
     <h1 id="title"></h1>
     <h1 id="subtitle"></h1>
   </div>
 
+  <div class="loader"></div>
 
-  <div class="tooltip card">
+  <div class="tooltip card none">
     <h1 class="constituency"></h1>
     <div class="results">
         <div class="party-container">
@@ -97,7 +102,7 @@
     
   </div>
 
-  <div class="details card collapsed">
+  <div class="details card collapsed none">
     <div class="section results none">
       <h2 class="header">Results</h2>
       <div style="margin-bottom: 15px;">
@@ -160,6 +165,7 @@
         <p style="margin: 5px">Minimum: <span style="font-weight: bold" id="majority-min"></span></p>
       </div>
     </div>
+    <span class="text">Interact with the map by clicking on elements of the charts.</span>
     <div class="toggle t-details card pointer highlightable">
         <i class="fas fa-angle-left"></i>
     </div>

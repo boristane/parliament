@@ -266,6 +266,34 @@ a:hover{
   display: none;
 }
 
+.details .text {
+  font-size: 12px;
+  color: grey;
+}
+
+#search-submit{
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: lightgray;
+  font-size: 20px;
+  margin: 0;
+  height: 0;
+  width: 0;
+  position: relative;
+  left: calc(100% - 30px);
+  top: -35px;
+  transition: all 0.3s ease-in-out;
+}
+
+#search-submit:hover {
+  color: rgb(253, 101, 101);
+}
+
+.submit-box{
+  background: none;
+}
+
 @media screen and (max-width: 770px) {
   .collapsed {
     right: -410px !important;

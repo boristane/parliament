@@ -178,7 +178,7 @@ function zoomOn(constituency) {
 const postcodeForm = document.getElementById('postcode');
 function handlePostcode(e) {
   e.preventDefault();
-  const postcode = this.postcode.value.split(' ').join('');
+  const postcode = postcodeForm.postcode.value.split(' ').join('');
   fetch(`https://api.postcodes.io/postcodes/${postcode}`)
     .then(response => response.json())
     .then((postcodeData) => {
@@ -188,6 +188,7 @@ function handlePostcode(e) {
     });
 }
 postcodeForm.addEventListener('submit', handlePostcode);
+document.getElementById('search-submit').addEventListener('click', handlePostcode);
 
 // Zoom on min and max properties
 document.getElementById('turnout-min').addEventListener('click', (e) => {
@@ -307,6 +308,11 @@ fetch(geoJsonGBURL)
                   .attr('y', d => projection([d.long, d.lat])[1] + 4)
                   .text(d => d.name)
                   .attr('class', 'city-name');
+
+                document.querySelectorAll('.card.none').forEach((elt) => {
+                  elt.classList.remove('none');
+                });
+                document.querySelector('.loader').classList.add('none');
               });
           });
       });
