@@ -6,6 +6,7 @@ body {
   height: 100vh;
   position: absolute;
   z-index: -10;
+  background-color: rgb(211, 233, 236);
 }
 
 #content{
@@ -237,4 +238,27 @@ a:hover{
   box-sizing: border-box;
   text-align: center;
   font-weight: 100;
+}
+
+.title-box {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  margin: 0;
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease-in-out;
+}
+
+.title-box #title {
+  font-size: 18px;
+  font-weight: 200;
+  padding: 0;
+  margin: 0;
+}
+.title-box #subtitle {
+  font-size: 15px;
+  font-weight: 200;
+  padding: 0;
+  margin: 0;
 }

@@ -5,6 +5,7 @@ import tooltip from './tooltip';
 import cities from './cities';
 import mapUtils from './map.utils';
 import details from './details';
+import changeTitle from './title';
 
 const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
 const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
@@ -132,20 +133,6 @@ function reset() {
     .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
 }
 
-function zoomIn() {
-  const scale = 3;
-  return d3.select('.main-svg').transition()
-    .duration(750)
-    .call(zoom.scaleBy, scale);
-}
-
-function zoomOut() {
-  const scale = 1 / 3;
-  return d3.select('.main-svg').transition()
-    .duration(750)
-    .call(zoom.scaleBy, scale);
-}
-
 function clicked(d) {
   if (active.node() === this) return reset();
   active.classed('active', false);
@@ -164,6 +151,68 @@ function clicked(d) {
     .duration(750)
     .call(zoom.transform, d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
 }
+
+function zoomIn() {
+  const scale = 3;
+  return d3.select('.main-svg').transition()
+    .duration(750)
+    .call(zoom.scaleBy, scale);
+}
+
+function zoomOut() {
+  const scale = 1 / 3;
+  return d3.select('.main-svg').transition()
+    .duration(750)
+    .call(zoom.scaleBy, scale);
+}
+
+function zoomOn(constituency) {
+  const d = mapData.features
+    .find(p => p.properties.results[0].ConstituencyName === constituency);
+  clicked(d);
+  d3.selectAll('.constituency-map').classed('active', false);
+  d3.select(`.constituency-map.${constituency.split(' ').join('_')}`).classed('active', true);
+}
+
+// Postcode search
+const postcodeForm = document.getElementById('postcode');
+function handlePostcode(e) {
+  e.preventDefault();
+  const postcode = this.postcode.value.split(' ').join('');
+  fetch(`https://api.postcodes.io/postcodes/${postcode}`)
+    .then(response => response.json())
+    .then((postcodeData) => {
+      if (postcodeData.status !== 200) return;
+      const postcodeConstituency = postcodeData.result.parliamentary_constituency;
+      zoomOn(postcodeConstituency);
+    });
+}
+postcodeForm.addEventListener('submit', handlePostcode);
+
+// Zoom on min and max properties
+document.getElementById('turnout-min').addEventListener('click', (e) => {
+  let constituency = e.target.textContent.split('(')[0];
+  constituency = constituency.slice(0, constituency.length - 1);
+  zoomOn(constituency);
+});
+
+document.getElementById('turnout-max').addEventListener('click', (e) => {
+  let constituency = e.target.textContent.split('(')[0];
+  constituency = constituency.slice(0, constituency.length - 1);
+  zoomOn(constituency);
+});
+
+document.getElementById('majority-min').addEventListener('click', (e) => {
+  let constituency = e.target.textContent.split('(')[0];
+  constituency = constituency.slice(0, constituency.length - 1);
+  zoomOn(constituency);
+});
+
+document.getElementById('majority-max').addEventListener('click', (e) => {
+  let constituency = e.target.textContent.split('(')[0];
+  constituency = constituency.slice(0, constituency.length - 1);
+  zoomOn(constituency);
+});
 
 fetch(geoJsonGBURL)
   .then(response => response.json())
@@ -210,6 +259,7 @@ fetch(geoJsonGBURL)
                   });
                 // Display the national results in the details box
                 details.displayNationalResults(mapData, partyDetails);
+                changeTitle('Results');
 
                 // Add zoom and pan events
                 function zoomed() {
@@ -226,23 +276,6 @@ fetch(geoJsonGBURL)
                 document.getElementById('reset-zoom').addEventListener('click', reset);
                 d3.select('.main-svg')
                   .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
-
-                // Postcode search
-                const postcodeForm = document.getElementById('postcode');
-                function handlePostcode(e) {
-                  e.preventDefault();
-                  const postcode = this.postcode.value.split(' ').join('');
-                  fetch(`https://api.postcodes.io/postcodes/${postcode}`)
-                    .then(response => response.json())
-                    .then((postcodeData) => {
-                      if (postcodeData.status !== 200) return console.log('Error');
-                      const postcodeConstituency = postcodeData.result.parliamentary_constituency;
-                      const d = mapData.features
-                        .find(p => p.properties.results[0].ConstituencyName === postcodeConstituency);
-                      clicked(d);
-                    });
-                }
-                postcodeForm.addEventListener('submit', handlePostcode);
 
                 // Add cities to svg
                 const citiesGroup = svg.append('g')

@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import d3Legend from 'd3-svg-legend';
 import utils from './utils';
+import changeTitle from './title';
 
 function ordinalLegend(labels, colors) {
   const ordinal = d3.scaleOrdinal()
@@ -10,7 +11,7 @@ function ordinalLegend(labels, colors) {
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')
-    .attr('transform', 'translate(20,20)')
+    .attr('transform', 'translate(30,100)')
     .style('opacity', 0);
   const legendOrdinal = d3Legend.legendColor()
     .shape('path', d3.symbol().type(d3.symbolSquare).size(400)())
@@ -34,7 +35,7 @@ function linearLegend(width, colors, step = 5) {
   d3.select('.map-legend').remove();
   svg.append('g')
     .attr('class', 'map-legend')
-    .attr('transform', 'translate(20,20)')
+    .attr('transform', 'translate(20,100)')
     .style('opacity', 0);
   const legendLinear = d3Legend.legendColor()
     .shapeWidth(30)
@@ -59,16 +60,18 @@ function displayResults(partyDetails) {
       return utils.getColor(winnigPartyCode, partyDetails);
     });
   d3.select('.map-legend').remove();
+  changeTitle('Results');
 }
 
-function displayPartyResults(partyCode, partyDetails) {
+function displayPartyResults(partyShortName, partyDetails) {
   d3.selectAll('.map-svg path')
     .attr('fill', (d) => {
       const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-      if (winnigPartyCode === partyCode) return utils.getColor(winnigPartyCode, partyDetails);
+      if (winnigPartyCode === partyShortName) return utils.getColor(winnigPartyCode, partyDetails);
       return 'lightgray';
     });
   d3.select('.map-legend').remove();
+  changeTitle('Results', `Party: ${partyShortName}`);
 }
 
 function displayChangedConstituencies() {
@@ -79,7 +82,9 @@ function displayChangedConstituencies() {
       const hold = d.properties.results[0].ResultHoldGain.includes('hold');
       return hold ? grey : gold;
     });
-  ordinalLegend(['Changed', 'Held'], [gold, grey]);
+  ordinalLegend(['Lost', 'Held'], [gold, grey]);
+
+  changeTitle('Lost Constituencies');
 }
 
 function displayPartyChangedConstituencies(partyShortName) {
@@ -98,6 +103,7 @@ function displayPartyChangedConstituencies(partyShortName) {
       return red;
     });
   ordinalLegend(['Gained', 'Lost'], [green, red]);
+  changeTitle('Lost Constituencies', `Party: ${partyShortName}`);
 }
 
 function displayGender() {
@@ -109,6 +115,7 @@ function displayGender() {
       return female ? blue : ivory;
     });
   ordinalLegend(['Female', 'Male'], [blue, ivory]);
+  changeTitle('Gender Representation - Seats');
 }
 
 function displayPartyGender(partyShortName) {
@@ -123,6 +130,7 @@ function displayPartyGender(partyShortName) {
       return female ? blue : green;
     });
   ordinalLegend(['Female', 'Male'], [blue, green]);
+  changeTitle('Gender Representation - Seats', `Party: ${partyShortName}`);
 }
 
 function displayPartyGenderCandidates(partyShortName) {
@@ -137,6 +145,7 @@ function displayPartyGenderCandidates(partyShortName) {
       return female ? blue : green;
     });
   ordinalLegend(['Female', 'Male'], [blue, green]);
+  changeTitle('Gender Representation - Candidates', `Party: ${partyShortName}`);
 }
 
 function displayTurnout(mapData, band = [0, 1]) {
@@ -160,6 +169,7 @@ function displayTurnout(mapData, band = [0, 1]) {
       return color(turnout);
     });
   linearLegend([minValue * 100, maxValue * 100], [lightBlue, darkBlue]);
+  changeTitle('Turout', `Band: ${(band[0] * 100).toFixed(0)}% - ${(band[1] * 100).toFixed(0)}%`);
 }
 
 function displayMajority(mapData, band = [0, 1]) {
@@ -183,6 +193,7 @@ function displayMajority(mapData, band = [0, 1]) {
       return color(majority);
     });
   linearLegend([minValue * 100, maxValue * 100], [lightRed, darkRed], 20);
+  changeTitle('Majority', `Band: ${(band[0] * 100).toFixed(0)}% - ${(band[1] * 100).toFixed(0)}%`);
 }
 
 function displayPartyShare(mapData, partyDetails, partyShortName) {

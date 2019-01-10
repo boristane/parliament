@@ -573,12 +573,12 @@ function displayNationalTurnout(mapData) {
   document.getElementById('turnout-max').textContent = `${maxTurnout.name} (${d3.format('.1%')(maxTurnout.turnout)})`;
   document.getElementById('turnout-max').classList.add('pointer', 'highlightable');
   document.getElementById('turnout-max').addEventListener('click', () => {
-    map.displayMajority(mapData, [maxTurnout.turnout, maxTurnout.turnout]);
+    map.displayTurnout(mapData, [maxTurnout.turnout, maxTurnout.turnout]);
   });
   document.getElementById('turnout-min').textContent = `${minTurnout.name} (${d3.format('.1%')(minTurnout.turnout)})`;
   document.getElementById('turnout-min').classList.add('pointer', 'highlightable');
   document.getElementById('turnout-min').addEventListener('click', () => {
-    map.displayMajority(mapData, [minTurnout.turnout, minTurnout.turnout]);
+    map.displayTurnout(mapData, [minTurnout.turnout, minTurnout.turnout]);
   });
 }
 
