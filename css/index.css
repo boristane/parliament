@@ -338,6 +338,10 @@ a:hover{
     top: 0px;
     right: 60px;
   }
+
+  .tooltip {
+    background-color:  rgba(255, 255, 255, 0.95); 
+  }
 }
 
 @media screen and (max-width: 380px) {
@@ -367,15 +371,24 @@ a:hover{
 
 @media screen and (max-width: 320px) {
   .details {
-    width: 320px;
+    width: 100vw;
+    padding: 10px;
   }
 
   .user-input {
-    width: 320px;
+    width: 100vw;
+  }
+
+  .collapsed .t-details {
+    right: 40px;
+  }
+
+  .t-details {
+    right: 10px;
   }
 
   .collapsed {
-    right: -320px !important;
+    right: -100vw !important;
   }
 
   .title-box {

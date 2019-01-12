@@ -45,6 +45,7 @@ function hide() {
     .duration(200)
     .style('opacity', 0);
 }
+document.querySelector('.tooltip').addEventListener('click', hide);
 
 function displayCandidate(candidate) {
   document.querySelector('.tooltip .results .party-logo').src = candidate.partyLogo;
