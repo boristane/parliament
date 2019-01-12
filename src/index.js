@@ -217,13 +217,18 @@ document.getElementById('majority-max').addEventListener('click', (e) => {
 
 // Responsiveness
 details.toggleDetails();
-document.querySelector('.i-details').addEventListener('click', () => {
+document.querySelector('.i-details').addEventListener('click', (e) => {
+  e.stopPropagation();
   document.querySelector('.user-input').classList.toggle('collapsed');
   document.querySelector('.user-input .fas').classList.toggle('fa-angle-left');
   document.querySelector('.user-input .fas').classList.toggle('fa-angle-right');
   document.querySelector('.details').classList.add('collapsed');
   document.querySelector('.details .fas').classList.add('fa-angle-left');
   document.querySelector('.details .fas').classList.remove('fa-angle-right');
+});
+document.querySelector('#content').addEventListener('click', () => {
+  document.querySelector('.details').classList.add('collapsed');
+  document.querySelector('.user-input').classList.add('collapsed');
 });
 
 fetch(geoJsonGBURL)

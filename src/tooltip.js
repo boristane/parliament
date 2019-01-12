@@ -23,6 +23,10 @@ function move(event) {
   if (yTooltip + tooltipPosition.height > parentPosition.height) {
     yTooltip -= tooltipPosition.height;
   }
+  if (parentPosition.width < 768) {
+    xTooltip = 20;
+    yTooltip = 100;
+  }
   tooltip
     .style('left', `${xTooltip}px`)
     .style('top', `${yTooltip}px`);

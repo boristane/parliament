@@ -62,12 +62,11 @@ body {
 
 div.tooltip {	
   position: absolute;						
-  width: 200px;					
+  width: 210px;					
   min-height: 80px;					
   padding: 2px;				
   color: rgb(75, 75, 75);	
-  border: 1px solid lightgray;
-  border-radius: 2px;			
+  border: 1px solid lightgray;		
   pointer-events: none;
   opacity: 0;
   padding: 10px;
@@ -301,13 +300,12 @@ a:hover{
 
   .details {
     right: 0;
-    background-color: rgba(255, 255, 255, 0.85);
-    padding-bottom: 0;
+    background-color: rgba(255, 255, 255, 0.95);
   }
 
   .user-input {
     right: 0;
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.95);
     padding-top: 0;
   }
 
@@ -329,7 +327,7 @@ a:hover{
 
   .t-details {
     top: 0px;
-    right: 30px;
+    right: 60px;
   }
 
   .collapsed .i-details {
@@ -338,23 +336,23 @@ a:hover{
 
   .i-details {
     top: 0px;
-    right: 30px;
+    right: 60px;
   }
 }
 
 @media screen and (max-width: 380px) {
   .details {
-    width: 375px;
-    padding-left: 5px;  
+    width: 375px; 
     box-sizing: border-box;
-  }
-
-  .collapsed .t-details {
-    right: 35px;
+    padding-bottom: 0;
   }
 
   .t-details {
-    right: 5px;
+    right: 30px;
+  }
+
+  .i-details {
+    right: 30px;
   }
 
   .user-input {
@@ -378,5 +376,9 @@ a:hover{
 
   .collapsed {
     right: -320px !important;
+  }
+
+  .title-box {
+    max-width: 230px;
   }
 }

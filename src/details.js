@@ -3,6 +3,9 @@ import statMethods from 'stat-methods';
 import map from './map.utils';
 import utils from './utils';
 
+const maxChartWidth = document.getElementById('content').clientWidth < 768 ? 300 : 350;
+const maxChartHeight = document.getElementById('content').clientWidth < 600 ? 150 : 250;
+
 function getPartyResults(mapData, partyDetails) {
   const results = [];
   const winningPartyPerConstituency = [];
@@ -60,7 +63,6 @@ function getPartyResults(mapData, partyDetails) {
 
 function verticalBarChart(obj, results, partyDetails) {
   const {
-    barWidth,
     numBars,
     margin,
     width,
@@ -73,6 +75,8 @@ function verticalBarChart(obj, results, partyDetails) {
     onClickParty,
   } = obj;
 
+  const barMargin = 5;
+  const barWidth = width / numBars - barMargin;
   let clicked;
   function handleClick(d) {
     if (clicked === d.party) {
@@ -97,7 +101,7 @@ function verticalBarChart(obj, results, partyDetails) {
       .ease(d3.easeElastic)
       .duration(300)
       .attr('width', barWidth)
-      .attr('x', i * (barWidth + 5) + 5);
+      .attr('x', i * (barWidth + barMargin) + barMargin);
   }
 
   d3.select(`.${chartClass}`).remove();
@@ -120,7 +124,7 @@ function verticalBarChart(obj, results, partyDetails) {
     .data(fieldResults)
     .enter()
     .append('rect')
-    .attr('x', (d, i) => i * (barWidth + 5) + 5)
+    .attr('x', (d, i) => i * (barWidth + barMargin) + barMargin)
     .attr('y', d => yScale(d[field]))
     .attr('width', barWidth)
     .attr('height', d => height - partyNameHeight - yScale(d[field]))
@@ -136,9 +140,15 @@ function verticalBarChart(obj, results, partyDetails) {
     .append('text')
     .attr('text-anchor', 'middle')
     .text(d => formatText(d[field]))
-    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('x', (d, i) => {
+      const offset = width <= 300 ? 3 * barMargin : 4 * barMargin;
+      return i * (barWidth + barMargin) + offset;
+    })
     .attr('y', d => yScale(d[field]) - 3)
-    .style('font-size', '13px')
+    .style('font-size', () => {
+      if (width <= 300) return '10px';
+      return '13px';
+    })
     .classed('pointer highlightable', true)
     .on('click', handleClick);
   chart.append('g')
@@ -151,12 +161,17 @@ function verticalBarChart(obj, results, partyDetails) {
       if (d.party === 'Alliance') return 'ALLI';
       return `${d.party.toUpperCase()}`;
     })
-    .attr('x', (d, i) => i * (barWidth + 5) + 20)
+    .attr('x', (d, i) => {
+      const offset = width <= 300 ? 3 * barMargin : 4 * barMargin;
+      return i * (barWidth + barMargin) + offset;
+    })
     .attr('y', height - 5)
     .style('font-weight', 'bold')
     .style('font-size', (d) => {
-      if (d.party.length > 3) return '10px';
-      return '12px';
+      let size = 12;
+      if (d.party.length > 3) size -= 2;
+      if (width <= 300) size -= 3;
+      return `${size}px`;
     })
     .classed('pointer highlightable', true)
     .on('click', handleClick);
@@ -164,7 +179,6 @@ function verticalBarChart(obj, results, partyDetails) {
 
 function horizontalBarChart(obj, results) {
   const {
-    barHeight,
     numBars,
     margin,
     width,
@@ -179,6 +193,8 @@ function horizontalBarChart(obj, results) {
     maxDataWidth,
   } = obj;
 
+  const barMargin = 5;
+  const barHeight = height / numBars - barMargin;
   let clicked;
   function handleClick(d) {
     if (clicked === d.party) {
@@ -203,7 +219,7 @@ function horizontalBarChart(obj, results) {
       .ease(d3.easeElastic)
       .duration(300)
       .attr('height', barHeight)
-      .attr('y', i * (barHeight + 5) + 5);
+      .attr('y', i * (barHeight + barMargin) + barMargin);
   }
 
   d3.select(`.${chartClass}`).remove();
@@ -230,7 +246,7 @@ function horizontalBarChart(obj, results) {
       if (d[field] > 0) return width / 2 + 1;
       return width / 2 - xScale(Math.abs(d[field]));
     })
-    .attr('y', (d, i) => i * (barHeight + 5) + 5)
+    .attr('y', (d, i) => i * (barHeight + barMargin) + barMargin)
     .attr('width', d => xScale(Math.abs(d[field])))
     .attr('height', barHeight)
     .attr('fill', d => d.color)
@@ -260,7 +276,7 @@ function horizontalBarChart(obj, results) {
       const partyNameWidth = d.party.length * 9.3;
       return width / 2 - partyNameWidth - 1;
     })
-    .attr('y', (d, i) => i * (barHeight + 5) + 5 + 5 * barHeight / 7)
+    .attr('y', (d, i) => i * (barHeight + barMargin) + barMargin + 5 * barHeight / 7)
     .style('font-weight', 'bold')
     .style('font-size', '13px')
     .classed('pointer highlightable', true)
@@ -277,7 +293,7 @@ function horizontalBarChart(obj, results) {
       if (d[field] < 0) return width / 2 + partyNameWidth + 4;
       return width / 2 - partyNameWidth - (Math.abs(d[field]) < 10 ? minDataWidth : maxDataWidth);
     })
-    .attr('y', (d, i) => i * (barHeight + 5) + 5 + 5 * barHeight / 7)
+    .attr('y', (d, i) => i * (barHeight + barMargin) + barMargin + 5 * barHeight / 7)
     .style('font-weight', 'bold')
     .style('font-size', '13px')
     .attr('fill', (d) => {
@@ -401,11 +417,10 @@ function displayNationalResults(mapData, partyDetails) {
   };
 
   const seatsResultsPlot = {
-    barWidth: 30,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'numSeats',
     chartClass: 'national-results-chart',
     chartContainerSelector: '.details .results-chart-container',
@@ -416,11 +431,10 @@ function displayNationalResults(mapData, partyDetails) {
   verticalBarChart(seatsResultsPlot, results, partyDetails);
 
   const votesResultsPlot = {
-    barWidth: 30,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'votes',
     chartClass: 'national-results-votes-chart',
     chartContainerSelector: '.details .results-chart-votes-container',
@@ -429,6 +443,9 @@ function displayNationalResults(mapData, partyDetails) {
     onClickParty: map.displayPartyResults,
   };
   verticalBarChart(votesResultsPlot, results, partyDetails);
+  document.querySelector('.results .header').addEventListener('click', () => {
+    map.displayResults(partyDetails);
+  });
 }
 
 function displayNationalChanged(mapData, partyDetails) {
@@ -442,11 +459,10 @@ function displayNationalChanged(mapData, partyDetails) {
   };
 
   const seatsDeltasPlot = {
-    barHeight: 20,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'delta',
     chartClass: 'national-changed-chart',
     chartContainerSelector: '.details .changed-chart-container',
@@ -459,11 +475,10 @@ function displayNationalChanged(mapData, partyDetails) {
   horizontalBarChart(seatsDeltasPlot, results);
 
   const votesDeltasPlot = {
-    barHeight: 20,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'deltaVotes',
     chartClass: 'national-changed-votes-chart',
     chartContainerSelector: '.details .changed-chart-votes-container',
@@ -477,6 +492,7 @@ function displayNationalChanged(mapData, partyDetails) {
     maxDataWidth: 45,
   };
   horizontalBarChart(votesDeltasPlot, results);
+  document.querySelector('.changed .header').addEventListener('click', () => map.displayChangedConstituencies);
 }
 
 function displayNationalGender(mapData, partyDetails) {
@@ -490,11 +506,10 @@ function displayNationalGender(mapData, partyDetails) {
   };
 
   const femaleResultsPlot = {
-    barWidth: 30,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'femaleSeats',
     chartClass: 'national-female-seats-chart',
     chartContainerSelector: '.details .gender-chart-container',
@@ -505,11 +520,10 @@ function displayNationalGender(mapData, partyDetails) {
   verticalBarChart(femaleResultsPlot, results, partyDetails);
 
   const femaleCandidatesPlot = {
-    barWidth: 30,
     numBars: 10,
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     field: 'femaleCandidates',
     chartClass: 'national-female-candidates-chart',
     chartContainerSelector: '.details .gender-chart-candidates-container',
@@ -518,6 +532,7 @@ function displayNationalGender(mapData, partyDetails) {
     onClickParty: map.displayPartyGenderCandidates,
   };
   verticalBarChart(femaleCandidatesPlot, results, partyDetails);
+  document.querySelector('.gender .header').addEventListener('click', map.displayGender);
 }
 
 function displayNationalTurnout(mapData) {
@@ -551,8 +566,8 @@ function displayNationalTurnout(mapData) {
   };
   const obj = {
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     chartClass: 'national-turnout-histogram-chart',
     chartContainerSelector: '.details .turnout-chart-container',
     darkColor: '#003366',
@@ -579,6 +594,9 @@ function displayNationalTurnout(mapData) {
   document.getElementById('turnout-min').classList.add('pointer', 'highlightable');
   document.getElementById('turnout-min').addEventListener('click', () => {
     map.displayTurnout(mapData, [minTurnout.turnout, minTurnout.turnout]);
+  });
+  document.querySelector('.turnout .header').addEventListener('click', () => {
+    map.displayTurnout(mapData);
   });
 }
 
@@ -613,8 +631,8 @@ function displayNationalMajority(mapData) {
   };
   const obj = {
     margin,
-    width: 350 - margin.left - margin.right,
-    height: 250 - margin.top - margin.bottom,
+    width: maxChartWidth - margin.left - margin.right,
+    height: maxChartHeight - margin.top - margin.bottom,
     chartClass: 'national-majority-histogram-chart',
     chartContainerSelector: '.details .majority-chart-container',
     darkColor: '#8b0000',
@@ -641,6 +659,9 @@ function displayNationalMajority(mapData) {
   document.getElementById('majority-min').classList.add('pointer', 'highlightable');
   document.getElementById('majority-min').addEventListener('click', () => {
     map.displayMajority(mapData, [minMajority.majority, minMajority.majority]);
+  });
+  document.querySelector('.majority .header').addEventListener('click', () => {
+    map.displayMajority(mapData);
   });
 }
 
