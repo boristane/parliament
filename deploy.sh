@@ -10,6 +10,7 @@ npm run build
 cp -r views dist
 cp -r css dist
 cp -r data dist
+cp -r img dist
 cp index.html dist
 
 # navigate into the build output directory

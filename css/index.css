@@ -358,37 +358,14 @@ a:hover{
 
 @media screen and (max-width: 380px) {
   .details {
-    width: 375px; 
-    box-sizing: border-box;
-    padding-bottom: 0;
-  }
-
-  .t-details {
-    right: 30px;
-  }
-
-  .i-details {
-    right: 30px;
-  }
-
-  .user-input {
-    width: 375px;
-    box-sizing: border-box;
-  }
-
-  .collapsed {
-    right: -375px !important;
-  }
-}
-
-@media screen and (max-width: 320px) {
-  .details {
     width: 100vw;
+    box-sizing: border-box;
     padding: 10px;
   }
 
   .user-input {
     width: 100vw;
+    box-sizing: border-box;
   }
 
   .collapsed .t-details {
@@ -397,6 +374,10 @@ a:hover{
 
   .t-details {
     right: 10px;
+  }
+
+  .i-details {
+    right: 30px;
   }
 
   .collapsed {
