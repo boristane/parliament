@@ -14,14 +14,14 @@
   </head>
 <body>
   <div class="map-controls">
-    <div id="zoom-in" class="pointer highlightable box card none"><i class="fas fa-plus"></i></div>
-    <div id="zoom-out" class="pointer highlightable box card none"><i class="fas fa-minus"></i></div>
-    <div id="reset-zoom" class="pointer highlightable box card none"><i class="fas fa-redo-alt"></i></div>
+    <div id="zoom-in" class="pointer highlightable box card hidden"><i class="fas fa-plus"></i></div>
+    <div id="zoom-out" class="pointer highlightable box card hidden"><i class="fas fa-minus"></i></div>
+    <div id="reset-zoom" class="pointer highlightable box card hidden"><i class="fas fa-redo-alt"></i></div>
   </div>
   <div style="position: absolute; right: 30px; bottom: 8px">
     <a href="./views/about.html" style="font-size: 12px;">about</a>
   </div>
-  <div class="user-input card collapsed none">
+  <div class="user-input card collapsed hidden">
     <div class="toggle i-details card pointer highlightable">
         <i class="fas fa-angle-left"></i>
     </div>
@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <div class="card title-box none">
+  <div class="card title-box hidden">
     <h1 id="title"></h1>
     <h1 id="subtitle"></h1>
   </div>
@@ -99,11 +99,11 @@
     </div>
   </div>
 
-  <div id="content">
+  <div id="content" class="hidden">
     
   </div>
 
-  <div class="details card collapsed none">
+  <div class="details card collapsed hidden">
     <div class="section results none">
       <h2 class="header pointer highlightable">Results</h2>
       <div style="margin-bottom: 15px;">
@@ -170,6 +170,10 @@
     <div class="toggle t-details card pointer highlightable">
         <i class="fas fa-angle-left"></i>
     </div>
+  </div>
+  <div class="help hidden">
+    <p><i class="far fa-hand-pointer"></i> Interactive</p>
+    <p>Tap / Click on the map to explore</p>
   </div>
 </body>
 <script src="dist/bundle.js"></script>

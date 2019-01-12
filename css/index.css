@@ -293,6 +293,18 @@ a:hover{
   background: none;
 }
 
+.help {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
 @media screen and (max-width: 770px) {
   .collapsed {
     right: -410px !important;

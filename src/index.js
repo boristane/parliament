@@ -314,10 +314,15 @@ fetch(geoJsonGBURL)
                   .text(d => d.name)
                   .attr('class', 'city-name');
 
-                document.querySelectorAll('.card.none').forEach((elt) => {
-                  elt.classList.remove('none');
-                });
+                document.querySelector('.help').classList.remove('hidden');
+                document.getElementById('content').classList.remove('hidden');
                 document.querySelector('.loader').classList.add('none');
+                setTimeout(() => {
+                  document.querySelector('.help').classList.add('hidden');
+                  document.querySelectorAll('.card.hidden').forEach((elt) => {
+                    elt.classList.remove('hidden');
+                  });
+                }, 3000);
               });
           });
       });
