@@ -169,7 +169,7 @@ function displayTurnout(mapData, band = [0, 1]) {
       return color(turnout);
     });
   linearLegend([minValue * 100, maxValue * 100], [lightBlue, darkBlue]);
-  changeTitle('Turout', `Band: ${(band[0] * 100).toFixed(0)}% - ${(band[1] * 100).toFixed(0)}%`);
+  changeTitle('Turnout', `Band: ${(band[0] * 100).toFixed(0)}% - ${(band[1] * 100).toFixed(0)}%`);
 }
 
 function displayMajority(mapData, band = [0, 1]) {
