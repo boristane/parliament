@@ -188,7 +188,8 @@ function displayConstituencyResults(candidates) {
     left: 5,
   };
   const width = 180 - margin.left - margin.right;
-  const height = 250 - margin.top - margin.bottom;
+  let height = document.getElementById('content').clientWidth < 520 ? 150 : 250;
+  height -= (margin.top + margin.bottom);
 
   d3.select('.majority-chart').remove();
   const chart = d3.select('.tooltip .majority-chart-container')

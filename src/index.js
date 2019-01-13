@@ -11,7 +11,7 @@ const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/mast
 const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
 const width = document.getElementById('content').clientWidth;
 const height = document.getElementById('content').clientHeight;
-const mapOffsetRight = 0; // -document.querySelector('.user-input').clientWidth / 2;
+const mapOffsetRight = 0;
 const white = '#fff';
 let partyDetails;
 let mapData;
@@ -102,7 +102,7 @@ function handleMouseOver(d) {
     });
 
     if (mapType === 'results') {
-      tooltip.displayConstituencyResults(candidates, partyDetails);
+      tooltip.displayConstituencyResults(candidates);
     }
     if (mapType === 'changed') {
       tooltip.displayChanged(partyDetails, winningRow.ResultHoldGain);
@@ -114,7 +114,7 @@ function handleMouseOver(d) {
       const electorate = winningRow.Electorate;
       tooltip.displayTurnout(turnout, electorate);
     } else if (mapType === 'majority') {
-      tooltip.displayConstituencyResults(candidates, partyDetails);
+      tooltip.displayConstituencyResults(candidates);
     }
     tooltip.move(e);
   }, 200);
