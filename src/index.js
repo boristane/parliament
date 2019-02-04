@@ -176,16 +176,13 @@ function zoomOn(constituency) {
 
 // Postcode search
 const postcodeForm = document.getElementById('postcode');
-function handlePostcode(e) {
+async function handlePostcode(e) {
   e.preventDefault();
   const postcode = postcodeForm.postcode.value.split(' ').join('');
-  fetch(`https://api.postcodes.io/postcodes/${postcode}`)
-    .then(response => response.json())
-    .then((postcodeData) => {
-      if (postcodeData.status !== 200) return;
-      const postcodeConstituency = postcodeData.result.parliamentary_constituency;
-      zoomOn(postcodeConstituency);
-    });
+  const postcodeData = await (await fetch(`https://api.postcodes.io/postcodes/${postcode}`)).json();
+  if (postcodeData.status !== 200) return;
+  const postcodeConstituency = postcodeData.result.parliamentary_constituency;
+  zoomOn(postcodeConstituency);
 }
 postcodeForm.addEventListener('submit', handlePostcode);
 document.getElementById('search-submit').addEventListener('click', handlePostcode);
@@ -231,99 +228,93 @@ document.querySelector('#content').addEventListener('click', () => {
   document.querySelector('.user-input').classList.add('collapsed');
 });
 
-fetch(geoJsonGBURL)
-  .then(response => response.json())
-  .then((data) => {
-    fetch(geoJsonNIURL)
-      .then(response => response.json())
-      .then((niData) => {
-        niData.features.forEach((feature) => {
-          data.features.push(feature);
-        });
-        mapData = simplify(data, 0.001);
-        const projection = d3.geoMercator();
-        projection.fitSize([width, height], mapData);
-        geoGenerator = d3.geoPath()
-          .projection(projection);
+async function main() {
+  const data = await (await fetch(geoJsonGBURL)).json();
+  const niData = await (await fetch(geoJsonNIURL)).json();
 
-        d3.csv('./data/Current-Parliament-Election-Results.csv')
-          .then((resultsData) => {
-            mapData.features.forEach((constituency) => {
-              const id = constituency.properties.PCON13CD || constituency.properties.PC_ID;
-              const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
-              constituency.properties.results = constituencyResults;
-            });
-            d3.json('./data/parties.json')
-              .then((res) => {
-                partyDetails = res;
-                // Join the FeatureCollection's features array to path elements
-                const map = svg.selectAll('.map-svg path')
-                  .data(mapData.features);
-
-                // Create path elements and update the d attribute using the geo generator
-                map.enter()
-                  .append('path')
-                  .attr('d', geoGenerator)
-                  .attr('stroke', white)
-                  .attr('stroke-width', 0)
-                  .attr('class', d => `${d.properties.results[0].ConstituencyName.split(' ').join('_')} constituency-map`)
-                  .on('mouseover', handleMouseOver)
-                  .on('mouseout', handleMouseOut)
-                  .on('click', clicked)
-                  .attr('fill', (d) => {
-                    const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-                    return utils.getColor(winnigPartyCode, partyDetails);
-                  });
-                // Display the national results in the details box
-                details.displayNationalResults(mapData, partyDetails);
-                changeTitle('Results');
-
-                // Add zoom and pan events
-                function zoomed() {
-                  d3.select('.map-svg').attr('transform', d3.event.transform);
-                }
-                zoom = d3.zoom()
-                  .scaleExtent([1, 50])
-                  .extent([[0, 0], [width, height]])
-                  // .translateExtent([[0, 0], [width, height]])
-                  .on('zoom', zoomed);
-                d3.select('.main-svg').call(zoom);
-                document.getElementById('zoom-in').addEventListener('click', zoomIn);
-                document.getElementById('zoom-out').addEventListener('click', zoomOut);
-                document.getElementById('reset-zoom').addEventListener('click', reset);
-                d3.select('.main-svg')
-                  .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
-
-                // Add cities to svg
-                const citiesGroup = svg.append('g')
-                  .attr('class', 'cities hidden');
-                citiesGroup.selectAll('circle')
-                  .data(cities).enter()
-                  .append('circle')
-                  .attr('cx', d => projection([d.long, d.lat])[0])
-                  .attr('cy', d => projection([d.long, d.lat])[1])
-                  .attr('r', '4px')
-                  .attr('fill', 'black')
-                  .attr('stroke', 'white')
-                  .attr('stroke-width', 2);
-                citiesGroup.selectAll('text')
-                  .data(cities).enter()
-                  .append('text')
-                  .attr('x', d => projection([d.long, d.lat])[0] + 8)
-                  .attr('y', d => projection([d.long, d.lat])[1] + 4)
-                  .text(d => d.name)
-                  .attr('class', 'city-name');
-
-                document.querySelector('.help').classList.remove('hidden');
-                document.getElementById('content').classList.remove('hidden');
-                document.querySelector('.loader').classList.add('none');
-                setTimeout(() => {
-                  document.querySelector('.help').classList.add('hidden');
-                  document.querySelectorAll('.card.hidden').forEach((elt) => {
-                    elt.classList.remove('hidden');
-                  });
-                }, 3000);
-              });
-          });
-      });
+  niData.features.forEach((feature) => {
+    data.features.push(feature);
   });
+  mapData = simplify(data, 0.001);
+  const projection = d3.geoMercator();
+  projection.fitSize([width, height], mapData);
+  geoGenerator = d3.geoPath()
+    .projection(projection);
+
+  const resultsData = await d3.csv('./data/Current-Parliament-Election-Results.csv');
+  mapData.features.forEach((constituency) => {
+    const id = constituency.properties.PCON13CD || constituency.properties.PC_ID;
+    const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
+    constituency.properties.results = constituencyResults;
+  });
+  partyDetails = await d3.json('./data/parties.json');
+  // Join the FeatureCollection's features array to path elements
+  const map = svg.selectAll('.map-svg path')
+    .data(mapData.features);
+
+  // Create path elements and update the d attribute using the geo generator
+  map.enter()
+    .append('path')
+    .attr('d', geoGenerator)
+    .attr('stroke', white)
+    .attr('stroke-width', 0)
+    .attr('class', d => `${d.properties.results[0].ConstituencyName.split(' ').join('_')} constituency-map`)
+    .on('mouseover', handleMouseOver)
+    .on('mouseout', handleMouseOut)
+    .on('click', clicked)
+    .attr('fill', (d) => {
+      const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
+      return utils.getColor(winnigPartyCode, partyDetails);
+    });
+  // Display the national results in the details box
+  details.displayNationalResults(mapData, partyDetails);
+  changeTitle('Results');
+
+  // Add zoom and pan events
+  function zoomed() {
+    d3.select('.map-svg').attr('transform', d3.event.transform);
+  }
+  zoom = d3.zoom()
+    .scaleExtent([1, 50])
+    .extent([[0, 0], [width, height]])
+    // .translateExtent([[0, 0], [width, height]])
+    .on('zoom', zoomed);
+  d3.select('.main-svg').call(zoom);
+  document.getElementById('zoom-in').addEventListener('click', zoomIn);
+  document.getElementById('zoom-out').addEventListener('click', zoomOut);
+  document.getElementById('reset-zoom').addEventListener('click', reset);
+  d3.select('.main-svg')
+    .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
+
+  // Add cities to svg
+  const citiesGroup = svg.append('g')
+    .attr('class', 'cities hidden');
+  citiesGroup.selectAll('circle')
+    .data(cities).enter()
+    .append('circle')
+    .attr('cx', d => projection([d.long, d.lat])[0])
+    .attr('cy', d => projection([d.long, d.lat])[1])
+    .attr('r', '4px')
+    .attr('fill', 'black')
+    .attr('stroke', 'white')
+    .attr('stroke-width', 2);
+  citiesGroup.selectAll('text')
+    .data(cities).enter()
+    .append('text')
+    .attr('x', d => projection([d.long, d.lat])[0] + 8)
+    .attr('y', d => projection([d.long, d.lat])[1] + 4)
+    .text(d => d.name)
+    .attr('class', 'city-name');
+
+  document.querySelector('.help').classList.remove('hidden');
+  document.getElementById('content').classList.remove('hidden');
+  document.querySelector('.loader').classList.add('none');
+  setTimeout(() => {
+    document.querySelector('.help').classList.add('hidden');
+    document.querySelectorAll('.card.hidden').forEach((elt) => {
+      elt.classList.remove('hidden');
+    });
+  }, 3000);
+}
+
+main();
