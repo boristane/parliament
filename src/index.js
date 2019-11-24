@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import * as d3 from 'd3';
 import simplify from 'simplify-geojson';
 import utils from './utils';
@@ -7,8 +8,8 @@ import mapUtils from './map.utils';
 import details from './details';
 import changeTitle from './title';
 
-const geoJsonGBURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/gb/wpc.json';
-const geoJsonNIURL = 'https://raw.githubusercontent.com/martinjc/UK-GeoJSON/master/json/electoral/ni/wpc.json';
+const geoJsonGBURL = 'https://raw.githubusercontent.com/boristane/parliament/master/data/gb.json';
+const geoJsonNIURL = 'https://raw.githubusercontent.com/boristane/parliament/master/data/ni.json';
 const width = document.getElementById('content').clientWidth;
 const height = document.getElementById('content').clientHeight;
 const mapOffsetRight = 0;
@@ -17,9 +18,11 @@ let partyDetails;
 let mapData;
 let geoGenerator;
 let zoom;
+let map;
 let active = d3.select(null);
 
 const selectMapType = document.getElementById('map-type');
+const selectResultYear = document.getElementById('election-year');
 const selectParty = document.getElementById('select-party');
 const citiesCheckbox = document.getElementById('cities-box');
 
@@ -30,6 +33,34 @@ const svg = d3.select('#content')
   .attr('class', 'main-svg')
   .append('g')
   .attr('class', 'map-svg');
+
+async function loadElectionAndData(year) {
+  const resultsData = await d3.csv(`./data/Parliament-Election-Results_${year}.csv`);
+  mapData.features.forEach((constituency) => {
+    const id = constituency.properties.PCON13CD || constituency.properties.PC_ID;
+    const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
+    constituency.properties.results = constituencyResults;
+  });
+  partyDetails = await d3.json('./data/parties.json');
+  svg.selectAll('.map-svg path').remove();
+  // Join the FeatureCollection's features array to path elements
+  map = svg.selectAll('.map-svg path')
+    .data(mapData.features);
+
+  map.enter()
+    .append('path')
+    .attr('d', geoGenerator)
+    .attr('stroke', white)
+    .attr('stroke-width', 0)
+    .attr('class', d => `${d.properties.results[0].ConstituencyName.split(' ').join('_')} constituency-map`)
+    .on('mouseover', handleMouseOver)
+    .on('mouseout', handleMouseOut)
+    .on('click', clicked)
+    .attr('fill', (d) => {
+      const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
+      return utils.getColor(winnigPartyCode, partyDetails);
+    });
+}
 
 citiesCheckbox.addEventListener('click', (e) => {
   const checkBox = e.target;
@@ -60,6 +91,14 @@ selectMapType.addEventListener('change', (e) => {
     const userSelectedParty = selectParty[selectParty.selectedIndex].value;
     mapUtils.displayPartyShare(mapData, partyDetails, userSelectedParty);
   }
+});
+
+selectResultYear.addEventListener('change', (e) => {
+  const electionYear = e.target.options[e.target.selectedIndex].value;
+  loadElectionAndData(electionYear).then(() => {
+    details.displayNationalResults(mapData, partyDetails);
+    changeTitle('Results');
+  });
 });
 
 selectParty.addEventListener('change', (e) => {
@@ -229,46 +268,22 @@ document.querySelector('#content').addEventListener('click', () => {
 });
 
 async function main() {
-  const data = await (await fetch(geoJsonGBURL)).json();
+  const gbData = await (await fetch(geoJsonGBURL)).json();
   const niData = await (await fetch(geoJsonNIURL)).json();
 
   niData.features.forEach((feature) => {
-    data.features.push(feature);
+    gbData.features.push(feature);
   });
-  mapData = simplify(data, 0.001);
+  mapData = simplify(gbData, 0.001);
   const projection = d3.geoMercator();
   projection.fitSize([width, height], mapData);
   geoGenerator = d3.geoPath()
     .projection(projection);
 
-  const resultsData = await d3.csv('./data/Current-Parliament-Election-Results.csv');
-  mapData.features.forEach((constituency) => {
-    const id = constituency.properties.PCON13CD || constituency.properties.PC_ID;
-    const constituencyResults = resultsData.filter(d => d.ONSconstID === id);
-    constituency.properties.results = constituencyResults;
+  loadElectionAndData(2019).then(() => {
+    details.displayNationalResults(mapData, partyDetails);
+    changeTitle('Results');
   });
-  partyDetails = await d3.json('./data/parties.json');
-  // Join the FeatureCollection's features array to path elements
-  const map = svg.selectAll('.map-svg path')
-    .data(mapData.features);
-
-  // Create path elements and update the d attribute using the geo generator
-  map.enter()
-    .append('path')
-    .attr('d', geoGenerator)
-    .attr('stroke', white)
-    .attr('stroke-width', 0)
-    .attr('class', d => `${d.properties.results[0].ConstituencyName.split(' ').join('_')} constituency-map`)
-    .on('mouseover', handleMouseOver)
-    .on('mouseout', handleMouseOut)
-    .on('click', clicked)
-    .attr('fill', (d) => {
-      const winnigPartyCode = d.properties.results.find(row => row.Elected === 'TRUE').PartyShortName;
-      return utils.getColor(winnigPartyCode, partyDetails);
-    });
-  // Display the national results in the details box
-  details.displayNationalResults(mapData, partyDetails);
-  changeTitle('Results');
 
   // Add zoom and pan events
   function zoomed() {
@@ -285,7 +300,6 @@ async function main() {
   document.getElementById('reset-zoom').addEventListener('click', reset);
   d3.select('.main-svg')
     .call(zoom.transform, d3.zoomIdentity.translate(mapOffsetRight, 0));
-
   // Add cities to svg
   const citiesGroup = svg.append('g')
     .attr('class', 'cities hidden');
@@ -309,6 +323,7 @@ async function main() {
   document.querySelector('.help').classList.remove('hidden');
   document.getElementById('content').classList.remove('hidden');
   document.querySelector('.loader').classList.add('none');
+
   setTimeout(() => {
     document.querySelector('.help').classList.add('hidden');
     document.querySelectorAll('.card.hidden').forEach((elt) => {
