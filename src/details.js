@@ -48,7 +48,6 @@ function getPartyResults(mapData, partyDetails) {
 
   winningPartyPerConstituency.forEach((constituency) => {
     const result = results.find(r => r.party === constituency.party);
-    console.log(constituency);
     result.numSeats += 1;
     result.femaleSeats += constituency.gender === 'Female' ? 1 : 0;
     if (constituency.hold.includes(`${result.party} gain`)) {
