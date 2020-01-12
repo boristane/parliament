@@ -1,0 +1,67 @@
+[
+  {
+    "PartyShortName": "Lab",
+    "color": "#E30000",
+    "logo": "https://botw-pd.s3.amazonaws.com/styles/logo-thumbnail/s3/032014/labour.png?itok=bhMSKafF"
+  },
+  {
+    "PartyShortName": "Con",
+    "color": "#3275DE",
+    "logo": "https://www.secca.org.uk/sites/www.secca.org.uk/files/2017-04/09NoY2fM_400x400.jpeg"
+  },
+  {
+    "PartyShortName": "PC",
+    "color": "#77D53C",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/9/99/Plaid_Cymru_logo.svg/640px-Plaid_Cymru_logo.svg.png"
+  },
+  {
+    "PartyShortName": "UKIP",
+    "color": "#760076",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7d/Logo_of_UKIP.svg/480px-Logo_of_UKIP.svg.png"
+  },
+  {
+    "PartyShortName": "SNP",
+    "color": "#F6FF81",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0f/Scottish_National_Party_logo_2016.svg/800px-Scottish_National_Party_logo_2016.svg.png"
+  },
+  {
+    "PartyShortName": "DUP",
+    "color": "#D86147",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Democratic_Unionist_Party_logo.svg/800px-Democratic_Unionist_Party_logo.svg.png"
+  },
+  {
+    "PartyShortName": "LD",
+    "color": "#FBA900",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f7/Liberal_Democrats_logo_2014.svg/640px-Liberal_Democrats_logo_2014.svg.png"
+  },
+  {
+    "PartyShortName": "Green",
+    "color": "#45936B",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Logo_of_the_Green_Party_%28UK%29.svg/472px-Logo_of_the_Green_Party_%28UK%29.svg.png"
+  },
+  {
+    "PartyShortName": "Spk",
+    "color": "#eee",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Crowned_Portcullis.svg/401px-Crowned_Portcullis.svg.png"
+  },
+  {
+    "PartyShortName": "SF",
+    "color": "#006941",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f1/Sinn_F%C3%A9in_Logo.svg/480px-Sinn_F%C3%A9in_Logo.svg.png"
+  },
+  {
+    "PartyShortName": "Ind",
+    "color": "#DC4BBB",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/EtruscanI-01.svg/347px-EtruscanI-01.svg.png"
+  },
+  {
+    "PartyShortName": "UUP",
+    "color": "#7200e6",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/2/20/Uuplogo.jpg"
+  },
+  {
+    "PartyShortName": "SDLP",
+    "color": "#42f442",
+    "logo": "https://upload.wikimedia.org/wikipedia/en/a/a5/Social_Democratic_and_Labour_Party.png"
+  }
+]

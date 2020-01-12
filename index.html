@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>UK General Elections Visualisation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/index.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/dropdown.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/checkbox.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="./css/loader.css" />
+  <link rel='shortcut icon' type='image/x-icon' href="./img/favicon.ico">
+  </head>
+<body>
+  <div class="map-controls">
+    <div id="zoom-in" class="pointer highlightable box card hidden"><i class="fas fa-plus"></i></div>
+    <div id="zoom-out" class="pointer highlightable box card hidden"><i class="fas fa-minus"></i></div>
+    <div id="reset-zoom" class="pointer highlightable box card hidden"><i class="fas fa-redo-alt"></i></div>
+  </div>
+  <div class="about">
+    <a href="./views/about.html" style="font-size: 12px;">about</a>
+  </div>
+  <div class="user-input card collapsed hidden">
+    <div class="toggle i-details card pointer highlightable">
+        <i class="fas fa-angle-left"></i>
+    </div>
+    <div>
+      <select id="election-year">
+        <option value="2019">General Elections 2019</option>
+        <option value="2017">General Elections 2017</option>
+      </select>
+    </div>
+    <div>
+      <select id="map-type">
+        <option value="results">Results</option>
+        <option value="changed">Lost Constituencies</option>
+        <option value="gender">Gender Representation</option>
+        <option value="turnout">Turnout</option>
+        <option value="majority">Majority</option>
+        <option value="share" style="display: none">Party Share</option>
+      </select>
+    </div>
+    <div>
+      <select id="select-party" style="display: none">
+        <option value="Con">Con</option>
+        <option value="Lab">Lab</option>
+        <option value="PC">PC</option>
+        <option value="UKIP">UKIP</option>
+        <option value="SNP">SNP</option>
+        <option value="DUP">DUP</option>
+      </select>
+    </div>
+    <div>
+      <form id="postcode">
+        <input type="text" name="postcode" placeholder="Enter a postcode">
+        <div class="submit-box" >
+            <p id="search-submit" value="search"><i class="fas fa-search"></i></p>
+        </div>
+      </form> 
+    </div>
+    <div>
+      <label for="cities-box" class="checkbox-container"> Display Cities
+          <input type="checkbox" id="cities-box" name="cities-box">
+          <span class="checkmark"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="card title-box hidden">
+    <h1 id="title"></h1>
+    <h1 id="subtitle"></h1>
+  </div>
+
+  <div class="loader"></div>
+
+  <div class="tooltip card hidden">
+    <h1 class="constituency"></h1>
+    <div class="results">
+        <div class="party-container">
+          <img src="" alt="party" class="party-logo">
+          <div>
+            <p style="margin: 0">
+              <span class="name"></span> <span class="position"></span>
+            </p>
+            <p class="gender"></p>
+            <p class="share"></p>
+          </div>
+        </div>
+    </div>
+    <div class="changed section none">
+        <div class="gain"></div>
+        <div class="lost"></div>
+    </div>
+    <div class="section none gender-div">
+      <h2 class="text" style="text-align: center"><span class="no-candidates" style="font-weight: bold;"></span> Candidates</h2>
+    </div>
+    <div class="section none turnout-div">
+      <h2 class="text" style="margin-bottom: 5px;">Electorate: <span class="electorate" style="font-weight: bold;"></span></h2>
+      <div class="turnout-chart-container"></div>
+      <h2 class="text" style="text-align: right; font-size: 15px;"><span class="turnout" style="font-weight: bold;"></span> Turnout</h2>
+    </div>
+    <div class="section none majority-div">
+      <div class="majority-chart-container"></div>
+    </div>
+  </div>
+
+  <div id="content" class="hidden">
+    
+  </div>
+
+  <div class="details card collapsed hidden">
+    <div class="section results none">
+      <h2 class="header pointer highlightable">Results</h2>
+      <div style="margin-bottom: 15px;">
+        <h2 class="header" style="font-size: 15px;">Seats</h2>
+        <div class="results-chart-container"></div>
+      </div>
+      <div>
+        <h2 class="header" style="font-size: 15px;">Votes</h2>
+        <div class="results-chart-votes-container"></div>
+      </div>
+    </div>
+
+    <div class="section changed none">
+      <h2 class="header pointer highlightable">Lost Constituencies</h2>
+      <div style="margin-bottom: 15px;">
+        <h2 class="header" style="font-size: 15px;">Seats</h2>
+        <div class="changed-chart-container"></div>
+      </div>
+      <div>
+        <h2 class="header" style="font-size: 15px;">Vote Share</h2>
+        <div class="changed-chart-votes-container"></div>
+      </div>
+    </div>
+    <div class="section gender none">
+      <h2 class="header pointer highlightable">Gender Representation</h2>
+      <div style="margin-bottom: 15px;">
+        <h2 class="header" style="font-size: 15px;">Female Seats</h2>
+        <div class="gender-chart-container"></div>
+      </div>
+      <div>
+        <h2 class="header" style="font-size: 15px;">Female Candidates</h2>
+        <div class="gender-chart-candidates-container"></div>
+      </div>
+    </div>
+    <div class="section turnout none">
+      <h2 class="header pointer highlightable">Turnout</h2>
+      <div style="margin-bottom: 15px;">
+        <h2 class="header" style="font-size: 15px;">Histogram</h2>
+        <div class="turnout-chart-container"></div>
+      </div>
+      <div class="stats">
+        <h2 class="header" style="font-size: 15px;">Statistics</h2>
+        <p style="margin: 5px">National Average: <span id="turnout-average"></span></p>
+        <p style="margin: 5px">Standard Deviation: <span id="turnout-stdev"></span></p>
+        <p style="margin: 5px">Maximum: <span style="font-weight: bold" id="turnout-max"></span></p>
+        <p style="margin: 5px">Minimum: <span style="font-weight: bold" id="turnout-min"></span></p>
+      </div>
+    </div>
+    <div class="section majority none">
+      <h2 class="header pointer highlightable">Majority</h2>
+      <div style="margin-bottom: 15px;">
+        <h2 class="header" style="font-size: 15px;">Histogram</h2>
+        <div class="majority-chart-container"></div>
+      </div>
+      <div class="stats">
+        <h2 class="header" style="font-size: 15px;">Statistics</h2>
+        <p style="margin: 5px">National Average: <span id="majority-average"></span></p>
+        <p style="margin: 5px">Standard Deviation: <span id="majority-stdev"></span></p>
+        <p style="margin: 5px">Maximum: <span style="font-weight: bold" id="majority-max"></span></p>
+        <p style="margin: 5px">Minimum: <span style="font-weight: bold" id="majority-min"></span></p>
+      </div>
+    </div>
+    <span class="text">Tap / Click on the elements of the charts to interact with the map.</span>
+    <div class="toggle t-details card pointer highlightable">
+        <i class="fas fa-angle-left"></i>
+    </div>
+  </div>
+  <div class="help hidden">
+    <p><i class="far fa-hand-pointer"></i> Interactive</p>
+    <p>Tap / Click on the map to explore</p>
+  </div>
+</body>
+<script src="dist/bundle.js"></script>
+</html>

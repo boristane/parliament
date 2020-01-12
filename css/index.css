@@ -1,0 +1,410 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  position: fixed;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#content{
+  background-color: rgb(211, 233, 236);
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -50;
+}
+
+.hidden {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
+.none {
+  display: none !important; 
+}
+
+.cities {
+  opacity: 0.9;
+  transition: all 0.2s ease-in-out;
+}
+
+.city-name {
+  font-size:  10px;
+  paint-order: stroke;
+  stroke: white;
+  stroke-width: 3px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+}
+
+.constituency-map {
+  transition: fill 0.2s ease-in-out;
+}
+
+.constituency-map:hover {
+  stroke-width: 0.3px;
+  stroke: rgb(253, 101, 101);
+  cursor: pointer;
+}
+
+.constituency-map.active {
+  stroke: black;
+  stroke-width: 0.1px;
+}
+
+div.tooltip {	
+  position: absolute;						
+  width: 210px;					
+  min-height: 80px;					
+  padding: 2px;				
+  color: rgb(75, 75, 75);	
+  border: 1px solid lightgray;		
+  pointer-events: none;
+  opacity: 0;
+  padding: 10px;
+  transition: all 0.2s ease-in-out;
+  z-index: -1;
+}
+
+.tooltip .section {
+  border-top: 1px solid lightgray;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.tooltip .section.changed {
+  display: grid;
+  grid-template-columns: 80% 20%;
+}
+
+.tooltip .section.gender {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.tooltip .changed .gain {
+  padding: 5px;
+  color: black;
+  font-size: 12px;
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.tooltip .constituency {
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid black;
+  padding: 0px 5px 5px 0px;
+  color: black;
+}
+
+.tooltip .party-container{
+  display: grid;
+  grid-template-columns: 30% 70%;
+}
+
+.tooltip .name {
+  font-size: 18px;
+}
+
+.tooltip .position {
+  font-size: 10px;
+}
+
+.tooltip .gender {
+  font-size: 12px;
+  margin: 0;
+}
+
+.tooltip .share {
+  font-size: 10px;
+  margin: 0;
+}
+
+.tooltip .party-logo{
+  width: 50px;
+  height: 50px;
+  border: 1px solid rgb(196, 196, 196);
+  background-color: white;
+  padding: 5px;
+  border-radius: 1px;
+  box-sizing: border-box;
+}
+
+.user-input {
+  width: 350px;
+  position: absolute;
+  right: 30px;
+  top: 20px;
+  padding: 30px;
+  z-index: -3;
+}
+
+.details {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  padding: 10px 30px 30px 30px;
+  z-index: -3;
+}
+
+.details .header {
+  font-size: 20px;
+  font-weight: 100;
+  margin: 5px 0;
+  text-align: right;
+  color: grey
+}
+
+.details .stats {
+  font-size: 14px; 
+  color: grey;
+}
+
+.gender-chart-text {
+  font-size: 12px;
+}
+
+.tooltip .text {
+  font-size: 15px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.highlightable {
+  transition: all 150ms ease-in-out;
+}
+
+.highlightable:hover {
+ fill: rgb(253, 101, 101);
+ color: rgb(253, 101, 101);
+}
+
+a {
+  text-decoration: none;
+  color: grey;
+  transition: color 0.2s ease-in-out;
+}
+
+a:visited {
+  text-decoration: none;
+  color: grey;
+}
+
+a:hover{
+  text-decoration: none;
+  color: rgb(253, 101, 101);
+}
+
+.map-controls {
+  position: absolute;
+  left: 20px;
+  bottom: 30px;
+  margin: 0;
+  padding: 0;
+  z-index: -4;
+}
+
+.map-controls .box {
+  width: 30px;
+  height: 30px; 
+  padding: 6px;
+  margin: 5px;
+  font-size: 15px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.title-box {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  margin: 0;
+  padding: 10px 15px;
+  transition: all 0.3s ease-in-out;
+  z-index: -4;
+  max-width: 280px;
+}
+
+.title-box #title {
+  font-size: 18px;
+  font-weight: 200;
+  padding: 0;
+  margin: 0;
+}
+.title-box #subtitle {
+  font-size: 15px;
+  font-weight: 200;
+  padding: 0;
+  margin: 0;
+}
+
+.toggle {
+  display: none;
+}
+
+.details .text {
+  font-size: 12px;
+  color: grey;
+}
+
+#search-submit{
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: lightgray;
+  font-size: 20px;
+  margin: 0;
+  height: 0;
+  width: 0;
+  position: relative;
+  left: calc(100% - 30px);
+  top: -35px;
+  transition: all 0.3s ease-in-out;
+}
+
+#search-submit:hover {
+  color: rgb(253, 101, 101);
+}
+
+.submit-box{
+  background: none;
+}
+
+.help {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  transition: all 0.3s ease-in-out;
+}
+
+.about {
+  position: absolute; 
+  right: 30px; 
+  bottom: 8px;
+}
+
+@media screen and (max-width: 770px) {
+  .collapsed {
+    right: -410px !important;
+  }
+
+  .details {
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  .user-input {
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding-top: 0;
+  }
+
+  .toggle {
+    display: block;
+    width: 30px;
+    height: 50px; 
+    padding: 15px 6px;
+    margin: 0px;
+    font-size: 15px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+  }
+
+  .collapsed .t-details {
+    right: 60px;
+  }
+
+  .t-details {
+    top: 0px;
+    right: 60px;
+  }
+
+  .collapsed .i-details {
+    right: 60px;
+  }
+
+  .i-details {
+    top: 0px;
+    right: 60px;
+  }
+
+  .tooltip {
+    background-color:  rgba(255, 255, 255, 0.95); 
+  }
+}
+
+@media screen and (max-width: 520px) {
+  #content {
+    height: calc(100vh - 40px);
+  }
+  
+  .details {
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 10px;
+    bottom: 80px;
+  }
+
+  .map-controls {
+    bottom: 80px;
+    left: 15px;
+  }
+
+  .about {
+    right: 10px; 
+    bottom: 60px
+  }
+
+  .user-input {
+    width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .collapsed .t-details {
+    right: 40px;
+  }
+
+  .t-details {
+    right: 10px;
+  }
+
+  .i-details {
+    right: 30px;
+  }
+
+  .collapsed {
+    right: -100vw !important;
+  }
+
+  .title-box {
+    max-width: 230px;
+  }
+}

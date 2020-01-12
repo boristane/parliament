@@ -1,0 +1,56 @@
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 0 20px;
+  text-align: left;
+  font-family: Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+}
+
+.container h1, h2, h3, h4 {
+  font-weight: normal;
+  margin-top: 40px;
+}
+
+.container h1 {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 50px;
+}
+
+.container h2 {
+  border-left: 5px solid rgb(253, 101, 101);
+  padding-left: 15px;
+}
+
+.container a {
+  color: rgb(253, 101, 101);
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.container a:hover {
+  border-bottom-color: rgb(253, 101, 101);
+}
+
+.container strong {
+  font-weight: 600;
+  color: #444;
+}
+
+.container ol {
+  padding-left: 1.6em;
+}
+
+.container ul {
+  padding-left: 15px;
+}
+
+.container p img {
+  width: 100%;
+}
+
+.container p, ol,
+p, ul {
+  line-height: 25px;
+}
