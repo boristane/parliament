@@ -71,6 +71,10 @@ citiesCheckbox.addEventListener('click', (e) => {
 
 selectMapType.addEventListener('change', (e) => {
   const mapType = e.target.options[e.target.selectedIndex].value;
+  displayCurrentMapType(mapType);
+});
+
+function displayCurrentMapType(mapType) {
   document.querySelectorAll('.details .section').forEach(elt => elt.classList.add('none'));
   if (mapType === 'results') {
     mapUtils.displayResults(partyDetails);
@@ -91,13 +95,13 @@ selectMapType.addEventListener('change', (e) => {
     const userSelectedParty = selectParty[selectParty.selectedIndex].value;
     mapUtils.displayPartyShare(mapData, partyDetails, userSelectedParty);
   }
-});
+}
 
 selectResultYear.addEventListener('change', (e) => {
   const electionYear = e.target.options[e.target.selectedIndex].value;
   loadElectionAndData(electionYear).then(() => {
-    details.displayNationalResults(mapData, partyDetails);
-    changeTitle('Results');
+    const mapType = selectMapType.options[selectMapType.selectedIndex].value;
+    displayCurrentMapType(mapType);
   });
 });
 

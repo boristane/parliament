@@ -23,7 +23,7 @@ function getPartyResults(mapData, partyDetails) {
       if (result) {
         result.votes += parseInt(candidate.Votes, 10);
         result.deltaVotes = (result.deltaVotes * result.numParticipatedConstituencies)
-          + parseFloat(candidate.ResultChangeValue);
+          + parseFloat(candidate.ResultChangeValue ? candidate.ResultChangeValue : 0);
         result.numParticipatedConstituencies += 1;
         result.deltaVotes /= result.numParticipatedConstituencies;
         result.femaleCandidates += candidate.CandidateGender === 'Female' ? 1 : 0;
@@ -48,6 +48,7 @@ function getPartyResults(mapData, partyDetails) {
 
   winningPartyPerConstituency.forEach((constituency) => {
     const result = results.find(r => r.party === constituency.party);
+    console.log(constituency);
     result.numSeats += 1;
     result.femaleSeats += constituency.gender === 'Female' ? 1 : 0;
     if (constituency.hold.includes(`${result.party} gain`)) {
